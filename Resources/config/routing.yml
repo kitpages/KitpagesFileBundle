@@ -1,3 +1,7 @@
-#homepage:
-#    pattern:  /
-#    defaults: { _controller: KitpagesFileBundle:Default:index }
+file_upload_check:
+    pattern:  /check
+    defaults: { _controller: KitpagesFileBundle:Upload:check }
+    
+file_upload_do_upload:
+    pattern:  /upload
+    defaults: { _controller: KitpagesFileBundle:Upload:doUpload }
