@@ -3,5 +3,9 @@ file_upload_check:
     defaults: { _controller: KitpagesFileBundle:Upload:check }
     
 file_upload_do_upload:
-    pattern:  /upload
+    pattern:  /do-upload
     defaults: { _controller: KitpagesFileBundle:Upload:doUpload }
+
+file_upload_upload:
+    pattern:  /upload
+    defaults: { _controller: KitpagesFileBundle:Upload:upload }

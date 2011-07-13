@@ -1,0 +1,22 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <link href="{{ asset ("bundles/kitpagesfile/uploadify/uploadify.css") }}" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="{{ asset ("bundles/kitpagesfile/uploadify/swfobject.js") }}"></script>
+    <script type="text/javascript" src="{{ asset ("bundles/kitpagesfile/uploadify/jquery.uploadify.v2.1.4.min.js") }}"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $('#file_upload').uploadify({
+        'uploader'  : '{{ asset ("bundles/kitpagesfile/uploadify/uploadify.swf") }}',
+        'script'    : '{{ path('file_upload_do_upload') }}',
+        'checkScript' : '{{ path('file_upload_check') }}',
+        'cancelImg' : '{{ asset ("bundles/kitpagesfile/uploadify/cancel.png") }}',
+        'folder'    : '/glouglou',
+        'multi' : true,
+        'auto'      : true
+      });
+    });
+    </script>
+    <input id="file_upload" name="file_upload" type="file" />
+    glouglou !!
+{% endblock body %}

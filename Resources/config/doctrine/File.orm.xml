@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
@@ -10,23 +11,31 @@
             <generator strategy="AUTO" />
         </id>
 
-        <field name="label" column="label" type="string" length="250"/>
         <field name="isPrivate" column="is_private" type="boolean" />
         <field name="fileName" column="file_name" type="string" length="250" />
         
-        <field name="isActive" column="is_active" type="boolean"/>
+        <field name="itemClassName" column="item_class_name" type="string" length="250" nullable="true" />
+        <field name="itemId" column="item_id" type="integer" nullable="true" />
+        
+        <field name="hasUploadFailed" column="hasUploadFailed" type="boolean" nullable="true" />
+        
+        <field name="data" column="data" type="array"/>
+        
         <field name="isPublished" column="is_published" type="boolean"/>
         
-        <field name="publicationDate" column="publication_date" type="datetime" nullable="true"/>
-        <field name="unpublicationDate" column="unpublication_date" type="datetime" nullable="true"/>
+        <field name="publishedAt" column="published_at" type="datetime" nullable="true">
+            <gedmo:timestampable on="change" field="isPublished" value="1" />
+        </field>
+        <field name="unpublishedAt" column="unpublished_at" type="datetime" nullable="true">
+            <gedmo:timestampable on="change" field="isPublished" value="0" />
+        </field>
         
-        <field name="creationDate" column="creation_date" type="datetime" />
-        <field name="modificationDate" column="modification_date" type="datetime" />
-        
-        <lifecycle-callbacks>
-          <lifecycle-callback type="prePersist" method="prePersist"/>
-          <lifecycle-callback type="preUpdate" method="preUpdate"/>
-        </lifecycle-callbacks>
+        <field name="createdAt" type="datetime">
+            <gedmo:timestampable on="create"/>
+        </field>
+        <field name="updatedAt" type="datetime">
+            <gedmo:timestampable on="update"/>
+        </field>        
     </entity>
 
 </doctrine-mapping>

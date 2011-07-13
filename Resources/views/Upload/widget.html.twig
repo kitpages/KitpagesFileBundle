@@ -1,0 +1,17 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#file-upload-{{ fieldId }}').uploadify({
+    'uploader'  : '{{ asset ("bundles/kitpagesfile/uploadify/uploadify.swf") }}',
+    'script'    : '{{ path('file_upload_do_upload') }}',
+    'checkScript' : '{{ path('file_upload_check') }}',
+    'cancelImg' : '{{ asset ("bundles/kitpagesfile/uploadify/cancel.png") }}',
+    'folder'    : '/glouglou',
+    //'multi' : true,
+    'auto'      : true,
+    'onComplete' : function(event, ID, fileObj, response, data) {
+        $("#{{ fieldId }}").attr('value', response);
+    }
+  });
+});
+</script>
+<input id="file-upload-{{ fieldId }}" name="file-upload-{{ fieldId }}" type="file" />

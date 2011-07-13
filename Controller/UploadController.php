@@ -3,45 +3,91 @@
 namespace Kitpages\FileBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+
+use Kitpages\FileBundle\Model\FileManager;
+use Kitpages\FileBundle\Entity\File;
 
 class UploadController extends Controller
 {
     public function checkAction()
     {
+        $dataDir = $this->container->getParameter('kitpages_file.data_dir');
+        $this->mkdirr($dataDir);
+        
         $fileArray = array();
         foreach ($_POST as $key => $value) {
             if ($key != 'folder') {
-                if (file_exists($_SERVER['DOCUMENT_ROOT'] . $_POST['folder'] . '/' . $value)) {
+                if (file_exists($dataDir.'/'.$value)) {
                     $fileArray[$key] = $value;
                 }
             }
         }
-        echo json_encode($fileArray);
-        return;
-        //return $this->render('KitpagesFileBundle:Default:index.html.twig');
+        return new Response( json_encode($fileArray) );
     }
     
+    /**
+     * @return FileManager
+     */
+    public function getFileManager()
+    {
+        return $this->get('kitpages.file.manager');
+    }
     public function doUploadAction()
     {
-        if (!empty($_FILES)) {
-            $tempFile = $_FILES['Filedata']['tmp_name'];
-            $targetPath = $_SERVER['DOCUMENT_ROOT'] . $_REQUEST['folder'] . '/';
-            $targetFile =  str_replace('//','/',$targetPath) . $_FILES['Filedata']['name'];
-
-            // $fileTypes  = str_replace('*.','',$_REQUEST['fileext']);
-            // $fileTypes  = str_replace(';','|',$fileTypes);
-            // $typesArray = split('\|',$fileTypes);
-            // $fileParts  = pathinfo($_FILES['Filedata']['name']);
-
-            // if (in_array($fileParts['extension'],$typesArray)) {
-                // Uncomment the following line if you want to make the directory if it doesn't exist
-                // mkdir(str_replace('//','/',$targetPath), 0755, true);
-
-                move_uploaded_file($tempFile,$targetFile);
-                echo str_replace($_SERVER['DOCUMENT_ROOT'],'',$targetFile);
-            // } else {
-            // 	echo 'Invalid file type.';
-            // }
+        $fileManager = $this->getFileManager();
+        $file = $fileManager->upload($_FILES['Filedata']['tmp_name'], $_FILES['Filedata']['name']);
+        if ( $file instanceof File) {
+            return new Response( $file->getId() );
         }
+        return new Response( '0' );
     }
+    
+    public function uploadAction()
+    {
+        return $this->render('KitpagesFileBundle:Upload:upload.html.twig');
+    }
+    public function widgetAction($fieldId)
+    {
+        return $this->render(
+            'KitpagesFileBundle:Upload:widget.html.twig',
+            array(
+                "fieldId" => $fieldId
+            )
+        );
+    }
+    
+    /**
+     * Create a directory and all subdirectories needed.
+     * @param string $pathname
+     * @param octal $mode example 0666
+     */
+    public static function mkdirr($pathname, $mode = null)
+    {
+        // Check if directory already exists
+        if (is_dir($pathname) || empty($pathname)) {
+            return true;
+        }
+        // Ensure a file does not already exist with the same name
+        if (is_file($pathname)) {
+            return false;
+        }
+        // Crawl up the directory tree
+        $nextPathname = substr($pathname, 0, strrpos($pathname, "/"));
+        if (self::mkdirr($nextPathname, $mode)) {
+            if (!file_exists($pathname)) {
+                if (is_null($mode)) {
+                    return mkdir($pathname);
+                } else {
+                    return mkdir($pathname, $mode);
+                }
+            }
+        } else {
+            throw new Exception (
+                "intermediate mkdirr $nextPathname failed"
+            );
+        }
+        return false;
+    }
+
 }
