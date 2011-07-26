@@ -86,6 +86,7 @@ class FileManager {
         $event->set('fileName', $fileName);
         $event->set('dataDir', $this->dataDir);
         $file = new File();
+        $file->setStatus(File::STATUS_TEMP);
         $file->setFileName($fileName);
         $file->setIsPrivate(false);
         $file->setIsPublished(false);
@@ -100,6 +101,7 @@ class FileManager {
             $em->persist($file);
             $this->getLogger()->info('file saved with id='.$file->getId());
             
+            $em->flush();
             // manage upload
             $targetFileName = $this->getOriginalAbsoluteFileName($file);
             $originalDir = dirname($targetFileName);
@@ -118,6 +120,40 @@ class FileManager {
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFileUpload, $event);
         return $file;
     }
+
+    public function delete(File $file)
+    {
+        $event = new FileEvent();
+        $event->set('fileObject', $file);
+        $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileDelete, $event);
+        if (!$event->isDefaultPrevented()) {
+            // remove original file
+            $targetFileName = $this->getOriginalAbsoluteFileName($file);
+            $originalDir = dirname($targetFileName);
+            
+            if (is_dir($originalDir)) {
+                $this->getUtil()->rmdirr($originalDir);
+            }            
+            $em = $this->getDoctrine()->getEntityManager();
+            $em->remove($file);
+            $em->flush();
+        }
+        $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFileDelete, $event);
+    }
+
+    public function unpublish($dir)
+    {
+        $event = new FileEvent();
+        $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileUnpublish, $event);
+        if (!$event->isDefaultPrevented()) {
+            $targetDir = $this->webRootDir.'/'.$dir;
+            // remove publish file
+            if (is_dir($targetDir)) {
+                $this->getUtil()->rmdirr($targetDir);
+            }            
+        }
+        $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFileUnpublish, $event);
+    }
     
     public function publish(File $file)
     {
@@ -133,10 +169,10 @@ class FileManager {
             $this->getUtil()->mkdirr($targetDir);
 
             // copy original file
-            copy($this->getOriginalAbsoluteFileName($file), $targetDir ) ;
+            copy($this->getOriginalAbsoluteFileName($file), $targetDir."/".$file->getFileName() ) ;
             // copy generated files
             foreach (glob($this->getGenerationDir($file).'/*') as $fileName) {
-                copy($fileName, $targetDir);
+                copy($fileName, $targetDir."/".$file->getFileName());
             }
         }
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFilePublish, $event);
@@ -154,7 +190,8 @@ class FileManager {
         $fileName = $originalDir.'/'.$file->getId().'-'.$file->getFilename();
         return $fileName;
     }
-    
+
+ 
     public function getGenerationDir(File $file)
     {
         $idString = (string) $file->getId();
@@ -175,8 +212,14 @@ class FileManager {
             $idString = '0'.$idString;
         }
         $dir = substr($idString, 0, 2);
-        return $this->publicPrefix.'/'.$dir.'/'.$file->getId();
+        return '/'.$this->publicPrefix.'/'.$dir.'/'.$file->getId();
     }
+
+    public function getFile($url)
+    {
+        return $this->getUtil()->getFile($url, 0);
+    }
+    
 }
 
 ?>

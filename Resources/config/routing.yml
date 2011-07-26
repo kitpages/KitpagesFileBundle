@@ -9,3 +9,7 @@ file_upload_do_upload:
 file_upload_upload:
     pattern:  /upload
     defaults: { _controller: KitpagesFileBundle:Upload:upload }
+    
+kitpages_file_render:
+    pattern:  /render
+    defaults: { _controller: KitpagesFileBundle:Render:view }    

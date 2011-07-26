@@ -2,6 +2,9 @@
 namespace Kitpages\FileBundle\Entity;
 
 class File {
+    
+    const STATUS_TEMP = 'temp';
+    
     /**
      * @var boolean $isPrivate
      */
@@ -291,5 +294,30 @@ class File {
     public function getData()
     {
         return $this->data;
+    }
+    /**
+     * @var string $status
+     */
+    private $status;
+
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string 
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

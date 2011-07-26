@@ -5,7 +5,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Kitpages\FileBundle\Entity\File" table="upload_file">
+    <entity name="Kitpages\FileBundle\Entity\File" table="kit_file">
 
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO" />
@@ -20,6 +20,8 @@
         <field name="hasUploadFailed" column="hasUploadFailed" type="boolean" nullable="true" />
         
         <field name="data" column="data" type="array"/>
+
+        <field name="status" column="status" type="string" length="250" />
         
         <field name="isPublished" column="is_published" type="boolean"/>
         

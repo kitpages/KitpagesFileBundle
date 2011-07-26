@@ -8,4 +8,10 @@ final class KitpagesFileEvents
     
     const onFilePublish = 'kitpages.file.on_publish';
     const afterFilePublish = 'kitpages.file.after_publish';
+    
+    const onFileDelete = 'kitpages.file.on_delete';
+    const afterFileDelete = 'kitpages.file.after_delete';    
+    
+    const onFileUnpublish = 'kitpages.file.on_unpublish';
+    const afterFileUnpublish = 'kitpages.file.after_unpublish';        
 }
