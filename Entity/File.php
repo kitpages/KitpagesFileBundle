@@ -17,31 +17,6 @@ class File {
     private $fileName;
 
     /**
-     * @var string $itemClassName
-     */
-    private $itemClassName;
-
-    /**
-     * @var integer $itemId
-     */
-    private $itemId;
-
-    /**
-     * @var boolean $isPublished
-     */
-    private $isPublished;
-
-    /**
-     * @var datetime $publishedAt
-     */
-    private $publishedAt;
-
-    /**
-     * @var datetime $unpublishedAt
-     */
-    private $unpublishedAt;
-
-    /**
      * @var datetime $createdAt
      */
     private $createdAt;
@@ -95,106 +70,6 @@ class File {
     public function getFileName()
     {
         return $this->fileName;
-    }
-
-    /**
-     * Set itemClassName
-     *
-     * @param string $itemClassName
-     */
-    public function setItemClassName($itemClassName)
-    {
-        $this->itemClassName = $itemClassName;
-    }
-
-    /**
-     * Get itemClassName
-     *
-     * @return string 
-     */
-    public function getItemClassName()
-    {
-        return $this->itemClassName;
-    }
-
-    /**
-     * Set itemId
-     *
-     * @param integer $itemId
-     */
-    public function setItemId($itemId)
-    {
-        $this->itemId = $itemId;
-    }
-
-    /**
-     * Get itemId
-     *
-     * @return integer 
-     */
-    public function getItemId()
-    {
-        return $this->itemId;
-    }
-
-    /**
-     * Set isPublished
-     *
-     * @param boolean $isPublished
-     */
-    public function setIsPublished($isPublished)
-    {
-        $this->isPublished = $isPublished;
-    }
-
-    /**
-     * Get isPublished
-     *
-     * @return boolean 
-     */
-    public function getIsPublished()
-    {
-        return $this->isPublished;
-    }
-
-    /**
-     * Set publishedAt
-     *
-     * @param datetime $publishedAt
-     */
-    public function setPublishedAt($publishedAt)
-    {
-        $this->publishedAt = $publishedAt;
-    }
-
-    /**
-     * Get publishedAt
-     *
-     * @return datetime 
-     */
-    public function getPublishedAt()
-    {
-        return $this->publishedAt;
-    }
-
-    /**
-     * Set unpublishedAt
-     *
-     * @param datetime $unpublishedAt
-     */
-    public function setUnpublishedAt($unpublishedAt)
-    {
-        $this->unpublishedAt = $unpublishedAt;
-    }
-
-    /**
-     * Get unpublishedAt
-     *
-     * @return datetime 
-     */
-    public function getUnpublishedAt()
-    {
-        return $this->unpublishedAt;
     }
 
     /**
