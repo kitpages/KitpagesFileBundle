@@ -41,6 +41,9 @@ class KitpagesFileExtension extends Extension
         $this->remapParameters($config, $container, array(
             'public_prefix'  => 'kitpages_file.public_prefix'
         ));
+        $this->remapParameters($config, $container, array(
+            'base_url'  => 'kitpages_file.base_url'
+        ));        
     }
 
     public function getAlias()

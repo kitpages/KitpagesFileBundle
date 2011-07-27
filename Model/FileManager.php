@@ -24,6 +24,7 @@ class FileManager {
     protected $util = null;
     protected $dataDir = null;
     protected $publicPrefix = null;
+    protected $baseUrl = null;
     protected $webRootDir = null;
     
     public function __construct(
@@ -33,6 +34,7 @@ class FileManager {
         Util $util,
         $dataDir,
         $publicPrefix,
+        $baseUrl,            
         $kernelRootDir
     )
     {
@@ -42,6 +44,7 @@ class FileManager {
         $this->util = $util;
         $this->dataDir = $dataDir;
         $this->publicPrefix = $publicPrefix;
+        $this->baseUrl = $baseUrl;        
         $this->webRootDir = realpath($kernelRootDir.'/../web');
     }
     
@@ -89,7 +92,6 @@ class FileManager {
         $file->setStatus(File::STATUS_TEMP);
         $file->setFileName($fileName);
         $file->setIsPrivate(false);
-        $file->setIsPublished(false);
         $file->setData(array());
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileUpload, $event);
@@ -161,8 +163,7 @@ class FileManager {
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFilePublish, $event);
         if (!$event->isDefaultPrevented()) {
-            $dir = $this->getFilePublicLocation($file);
-            $targetDir = $this->webRootDir.'/'.$dir;
+            $targetDir = $this->getAbsoluteFilePublic($file);
             if (is_dir($targetDir)) {
                 $this->getUtil()->rmdirr($targetDir);
             }
@@ -204,6 +205,15 @@ class FileManager {
         return $generationDir;
     }
     
+    public function getAbsoluteFilePublic(File $file)
+    {
+        $idString = (string) $file->getId();
+        if (strlen($idString)== 1) {
+            $idString = '0'.$idString;
+        }
+        $dir = substr($idString, 0, 2);
+        return $this->webRootDir.'/'.$this->publicPrefix.'/'.$dir.'/'.$file->getId();
+    }    
     
     public function getFilePublicLocation(File $file)
     {
@@ -212,9 +222,14 @@ class FileManager {
             $idString = '0'.$idString;
         }
         $dir = substr($idString, 0, 2);
-        return '/'.$this->publicPrefix.'/'.$dir.'/'.$file->getId();
+        return $this->baseUrl.'/'.$this->publicPrefix.'/'.$dir.'/'.$file->getId();
     }
 
+    public function getFileLocation($id){
+        return $this->baseUrl."/file/render?id=".$id;
+    }    
+
+    
     public function getFile($url)
     {
         return $this->getUtil()->getFile($url, 0);

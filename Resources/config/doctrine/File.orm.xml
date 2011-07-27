@@ -13,13 +13,14 @@
 
         <field name="isPrivate" column="is_private" type="boolean" />
         <field name="fileName" column="file_name" type="string" length="250" />
-        
+       
         <field name="hasUploadFailed" column="hasUploadFailed" type="boolean" nullable="true" />
         
         <field name="data" column="data" type="array"/>
 
         <field name="status" column="status" type="string" length="250" />
         
+       
         <field name="createdAt" type="datetime">
             <gedmo:timestampable on="create"/>
         </field>

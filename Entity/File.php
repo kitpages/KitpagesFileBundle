@@ -196,4 +196,5 @@ class File {
     {
         return $this->status;
     }
+
 }

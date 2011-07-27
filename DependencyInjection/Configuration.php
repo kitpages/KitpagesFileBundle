@@ -50,6 +50,10 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('data/bundle/kitpagesfile')
                     ->cannotBeEmpty()
                 ->end()
+                ->scalarNode('base_url')
+                    ->defaultValue('data/bundle/kitpagesfile')
+                    ->cannotBeEmpty()
+                ->end()                
             ->end();
     }
 

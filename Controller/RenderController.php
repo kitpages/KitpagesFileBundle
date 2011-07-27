@@ -12,10 +12,14 @@ class RenderController extends Controller
 {
  
     public function viewAction(){
+        $em = $this->getDoctrine()->getEntityManager();
         $fileManager = $this->get('kitpages.file.manager');
-        $path = $this->getRequest()->query->get('path', null);
-        if (!is_null($path)) {
-            $fileManager->getFile($path);
+        $fileId = $this->getRequest()->query->get('id', null);
+        if (!is_null($fileId)) {
+            $file = $em->getRepository('KitpagesFileBundle:File')->find($fileId);
+            if ($file != null) {
+                $fileManager->getFile($fileManager->getOriginalAbsoluteFileName($file));
+            }
         }
     }
     
