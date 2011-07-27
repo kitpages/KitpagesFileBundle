@@ -4,6 +4,7 @@ namespace Kitpages\FileBundle\Entity;
 class File {
     
     const STATUS_TEMP = 'temp';
+    const STATUS_VALID = 'valid';    
     
     /**
      * @var boolean $isPrivate
