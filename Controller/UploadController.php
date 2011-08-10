@@ -39,7 +39,17 @@ class UploadController extends Controller
         $fileManager = $this->getFileManager();
         $file = $fileManager->upload($_FILES['Filedata']['tmp_name'], $_FILES['Filedata']['name']);
         if ( $file instanceof File) {
-            return new Response( $file->getId() );
+            $data = array(
+                'id' => $file->getId(),
+                'fileName' => $file->getFilename(),
+                'url' => $this->generateUrl(
+                    'kitpages_file_render',
+                    array(
+                        'id' => $file->getId()
+                    )
+                )
+            );
+            return new Response( json_encode($data) );
         }
         return new Response( '0' );
     }

@@ -23,4 +23,29 @@ class RenderController extends Controller
         }
     }
     
+    public function infoAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        $fileManager = $this->get('kitpages.file.manager');
+        $fileId = $this->getRequest()->request->get('id', null);
+        if (!is_null($fileId)) {
+            $file = $em->getRepository('KitpagesFileBundle:File')->find($fileId);
+            if ($file != null) {
+                $data = array(
+                    'id' => $file->getId(),
+                    'fileName' => $file->getFilename(),
+                    'url' => $this->generateUrl(
+                        'kitpages_file_render',
+                        array(
+                            'id' => $file->getId()
+                        )
+                    )
+                );
+                return new Response( json_encode($data) );
+            }
+        }
+        return new Response( 'null' );
+    }
+
+    
 }
