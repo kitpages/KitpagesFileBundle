@@ -15,7 +15,7 @@ class UploadController extends Controller
         $dataDir = $this->container->getParameter('kitpages_file.data_dir');
         $util = $this->get('kitpages.util');
         $util->mkdirr($dataDir);
-        
+
         $fileArray = array();
         foreach ($_POST as $key => $value) {
             if ($key != 'folder') {
@@ -26,7 +26,7 @@ class UploadController extends Controller
         }
         return new Response( json_encode($fileArray) );
     }
-    
+
     /**
      * @return FileManager
      */
@@ -53,7 +53,7 @@ class UploadController extends Controller
         }
         return new Response( '0' );
     }
-    
+
     public function uploadAction()
     {
         return $this->render('KitpagesFileBundle:Upload:upload.html.twig');
@@ -63,9 +63,10 @@ class UploadController extends Controller
         return $this->render(
             'KitpagesFileBundle:Upload:widget.html.twig',
             array(
-                "fieldId" => $fieldId
+                "fieldId" => $fieldId,
+                "kitpages_file_session_id" => session_id()
             )
         );
     }
-    
+
 }

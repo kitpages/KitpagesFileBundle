@@ -6,6 +6,7 @@
 
     <parameters>
         <parameter key="kitpages_file.fileManager.class">Kitpages\FileBundle\Model\FileManager</parameter>
+        <parameter key="kitpages_file.sessionListener.class">Kitpages\FileBundle\EventListener\SessionListener</parameter>
     </parameters>
 
     <services>
@@ -16,9 +17,14 @@
             <argument type="service" id="kitpages.util"/>
             <argument>%kitpages_file.data_dir%</argument>
             <argument>%kitpages_file.public_prefix%</argument>
-            <argument>%kitpages_file.base_url%</argument>               
+            <argument>%kitpages_file.base_url%</argument>
             <argument>%kernel.root_dir%</argument>
         </service>
+        
+        <service id="kitpages.file.sessionListener" class="%kitpages_file.sessionListener.class%">
+            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" priority="200" />
+            <argument type="service" id="logger"/>
+        </service>
     </services>
-  
+
 </container>

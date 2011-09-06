@@ -18,6 +18,7 @@ $(document).ready(function() {
         'cancelImg' : '{{ asset ("bundles/kitpagesfile/uploadify/cancel.png") }}',
         'folder'    : '/glouglou',
         'buttonText': 'Upload a image',
+        'scriptData' : {'kitpages_file_session_id': '{{ kitpages_file_session_id }}'},
         //'multi' : true,
         'auto'      : true,
         'onComplete' : function(event, ID, fileObj, response, data) {
@@ -26,7 +27,7 @@ $(document).ready(function() {
             displayThumbnail(tab);
         }
     });
-  
+
     var fileId = $("#{{ fieldId }}").attr('value');
     if (fileId) {
         $.ajax({
@@ -39,7 +40,7 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     $("#kit-file-container-{{ fieldId }}").delegate(
         "a.kit-file-delete-upload",
         "click",
