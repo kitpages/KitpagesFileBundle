@@ -4,7 +4,11 @@ $(document).ready(function() {
     var displayThumbnail = function(tab) {
         if (tab) {
             $("#kit-file-container-{{ fieldId }} ul.kit-file-image-list").html(
-                '<li><img src="'+tab.url+'" width="50"/> '+tab.fileName+' <a class="kit-file-delete-upload">[X]</a></li>'
+                '<li><img src="'+tab.url+'"/> '+
+                     tab.fileName+
+                     ' <a class="kit-file-delete-upload">'+
+                     '<img src="{{ asset ("bundles/kitpagesfile/icon/delete.png") }}" width="20" height="20" alt="[X]"/>'+
+                     '</a></li>'
             );
         }
         else {
