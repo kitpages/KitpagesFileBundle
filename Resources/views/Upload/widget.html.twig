@@ -3,8 +3,15 @@
 $(document).ready(function() {
     var displayThumbnail = function(tab) {
         if (tab) {
+            var iconHtml = null;
+            if (tab.isImage) {
+                iconHtml = '<img src="'+tab.url+'"/>';
+            }
+            else {
+                iconHtml = '<div class="kit-file-document-icon"><div>'+tab.fileExtension+'</div></div>';
+            }
             $("#kit-file-container-{{ fieldId }} ul.kit-file-image-list").html(
-                '<li><img src="'+tab.url+'"/> '+
+                '<li>'+iconHtml+' '+
                      tab.fileName+
                      ' <a class="kit-file-delete-upload">'+
                      '<img src="{{ asset ("bundles/kitpagesfile/icon/delete.png") }}" width="20" height="20" alt="[X]"/>'+
