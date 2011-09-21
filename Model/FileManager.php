@@ -26,7 +26,7 @@ class FileManager {
     protected $publicPrefix = null;
     protected $baseUrl = null;
     protected $webRootDir = null;
-    
+
     public function __construct(
         Registry $doctrine,
         EventDispatcherInterface $dispatcher,
@@ -34,7 +34,7 @@ class FileManager {
         Util $util,
         $dataDir,
         $publicPrefix,
-        $baseUrl,            
+        $baseUrl,
         $kernelRootDir
     )
     {
@@ -44,10 +44,10 @@ class FileManager {
         $this->util = $util;
         $this->dataDir = $dataDir;
         $this->publicPrefix = $publicPrefix;
-        $this->baseUrl = $baseUrl;        
+        $this->baseUrl = $baseUrl;
         $this->webRootDir = realpath($kernelRootDir.'/../web');
     }
-    
+
     /**
      * @return LoggerInterface
      */
@@ -62,7 +62,7 @@ class FileManager {
     public function getDispatcher() {
         return $this->dispatcher;
     }
-    
+
     /**
      * @return Registry
      */
@@ -102,7 +102,7 @@ class FileManager {
             $em = $this->getDoctrine()->getEntityManager();
             $em->persist($file);
             $this->getLogger()->info('file saved with id='.$file->getId());
-            
+
             $em->flush();
             // manage upload
             $targetFileName = $this->getOriginalAbsoluteFileName($file);
@@ -132,10 +132,10 @@ class FileManager {
             // remove original file
             $targetFileName = $this->getOriginalAbsoluteFileName($file);
             $originalDir = dirname($targetFileName);
-            
+
             if (is_dir($originalDir)) {
                 $this->getUtil()->rmdirr($originalDir);
-            }            
+            }
             $em = $this->getDoctrine()->getEntityManager();
             $em->remove($file);
             $em->flush();
@@ -152,11 +152,11 @@ class FileManager {
             // remove publish file
             if (is_dir($targetDir)) {
                 $this->getUtil()->rmdirr($targetDir);
-            }            
+            }
         }
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFileUnpublish, $event);
     }
-    
+
     public function publish(File $file)
     {
         $event = new FileEvent();
@@ -170,15 +170,19 @@ class FileManager {
             $this->getUtil()->mkdirr($targetDir);
 
             // copy original file
-            copy($this->getOriginalAbsoluteFileName($file), $targetDir."/".$file->getFileName() ) ;
+            if (is_file($this->getOriginalAbsoluteFileName($file))) {
+                copy($this->getOriginalAbsoluteFileName($file), $targetDir."/".$file->getFileName() ) ;
+            }
             // copy generated files
             foreach (glob($this->getGenerationDir($file).'/*') as $fileName) {
-                copy($fileName, $targetDir."/".$file->getFileName());
+                if (is_file($fileName)) {
+                    copy($fileName, $targetDir."/".$file->getFileName());
+                }
             }
         }
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFilePublish, $event);
     }
-    
+
     public function getOriginalAbsoluteFileName(File $file)
     {
         $idString = (string) $file->getId();
@@ -192,7 +196,7 @@ class FileManager {
         return $fileName;
     }
 
- 
+
     public function getGenerationDir(File $file)
     {
         $idString = (string) $file->getId();
@@ -204,7 +208,7 @@ class FileManager {
         $this->getUtil()->mkdirr($generationDir);
         return $generationDir;
     }
-    
+
     public function getAbsoluteFilePublic(File $file)
     {
         $idString = (string) $file->getId();
@@ -213,8 +217,8 @@ class FileManager {
         }
         $dir = substr($idString, 0, 2);
         return $this->webRootDir.'/'.$this->publicPrefix.'/'.$dir.'/'.$file->getId();
-    }    
-    
+    }
+
     public function getFilePublicLocation(File $file)
     {
         $idString = (string) $file->getId();
@@ -227,14 +231,14 @@ class FileManager {
 
     public function getFileLocation($id){
         return $this->baseUrl."/file/render?id=".$id;
-    }    
+    }
 
-    
+
     public function getFile($url)
     {
         return $this->getUtil()->getFile($url, 0);
     }
-    
+
 }
 
 ?>
