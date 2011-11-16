@@ -20,10 +20,13 @@
             <argument>%kitpages_file.base_url%</argument>
             <argument>%kernel.root_dir%</argument>
         </service>
-        
+
         <service id="kitpages.file.sessionListener" class="%kitpages_file.sessionListener.class%">
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" priority="200" />
             <argument type="service" id="logger"/>
+        </service>
+        <service id="kitpages.file.twig.extension.catalog" class="Kitpages\FileBundle\Twig\Extension\FileExtension">
+            <tag name="twig.extension" />
         </service>
     </services>
 

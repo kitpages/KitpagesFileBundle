@@ -76,4 +76,13 @@ class UploadController extends Controller
         );
     }
 
+    public function collectionWidgetAction()
+    {
+        return $this->render(
+            'KitpagesFileBundle:Upload:collectionWidget.html.twig',
+            array(
+                "kitpages_file_session_id" => session_id()
+            )
+        );
+    }
 }
