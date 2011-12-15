@@ -1,9 +1,9 @@
 file_upload_check:
     pattern:  /check
     defaults: { _controller: KitpagesFileBundle:Upload:check }
-    
+
 file_upload_do_upload:
-    pattern:  /do-upload
+    pattern:  /do-upload/{entityFileName}
     defaults: { _controller: KitpagesFileBundle:Upload:doUpload }
 
 file_upload_upload:
@@ -11,9 +11,9 @@ file_upload_upload:
     defaults: { _controller: KitpagesFileBundle:Upload:upload }
 
 kitpages_file_render:
-    pattern:  /render
-    defaults: { _controller: KitpagesFileBundle:Render:view }
+    pattern:  /render/{entityFileName}
+    defaults: { _controller: KitpagesFileBundle:Render:view, entityFileName:default }
 
 kitpages_file_info:
-    pattern:  /info
+    pattern:  /info/{entityFileName}
     defaults: { _controller: KitpagesFileBundle:Render:info }

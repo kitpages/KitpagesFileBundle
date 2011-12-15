@@ -22,7 +22,7 @@
 
     $('#kit-file-upload-' + fieldId).uploadify({
         'uploader'  : '{{ asset ("bundles/kitpagesfile/uploadify/uploadify.swf") }}',
-        'script'    : '{{ path('file_upload_do_upload') }}',
+        'script'    : '{{ path('file_upload_do_upload', {'entityFileName' :entityFileName}) }}',
         'checkScript' : '{{ path('file_upload_check') }}',
         'cancelImg' : '{{ asset ("bundles/kitpagesfile/uploadify/cancel.png") }}',
         'folder'    : '/glouglou',
@@ -41,7 +41,7 @@
     if (fileId) {
         $.ajax({
             type: "POST",
-            url: "{{ path('kitpages_file_info') }}",
+            url: "{{ path('kitpages_file_info', {'entityFileName' :entityFileName}) }}",
             dataType: 'json',
             data: "id="+fileId,
             success: function(data) {

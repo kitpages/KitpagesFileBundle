@@ -34,7 +34,7 @@ class KitpagesFileExtension extends Extension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
-        
+
         $this->remapParameters($config, $container, array(
             'data_dir'  => 'kitpages_file.data_dir'
         ));
@@ -43,7 +43,13 @@ class KitpagesFileExtension extends Extension
         ));
         $this->remapParameters($config, $container, array(
             'base_url'  => 'kitpages_file.base_url'
-        ));        
+        ));
+        $this->remapParameters($config, $container, array(
+            'entity_file_name_list'  => 'kitpages_file.entity_file_name_list'
+        ));
+        $this->remapParameters($config, $container, array(
+            'entity_file_name_default'  => 'kitpages_file.entity_file_name_default'
+        ));
     }
 
     public function getAlias()
@@ -82,7 +88,7 @@ class KitpagesFileExtension extends Extension
     }
 
     /**
-     * 
+     *
      * @param array            $config
      * @param ContainerBuilder $container
      * @param array            $map

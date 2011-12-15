@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 use Kitpages\FileBundle\Model\FileManager;
-use Kitpages\FileBundle\Entity\File;
+use Kitpages\FileBundle\Entity\FileInterface;
 
 class UploadController extends Controller
 {
@@ -34,11 +34,11 @@ class UploadController extends Controller
     {
         return $this->get('kitpages.file.manager');
     }
-    public function doUploadAction()
+    public function doUploadAction($entityFileName)
     {
         $fileManager = $this->getFileManager();
-        $file = $fileManager->upload($_FILES['Filedata']['tmp_name'], $_FILES['Filedata']['name']);
-        if ( $file instanceof File) {
+        $file = $fileManager->upload($_FILES['Filedata']['tmp_name'], $_FILES['Filedata']['name'], $entityFileName);
+        if ( $file instanceof FileInterface) {
             $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
             $isImage = false;
             if (in_array($ext, array('jpg', 'jpeg', 'png', 'gif', 'webp'))) {
@@ -52,7 +52,8 @@ class UploadController extends Controller
                 'url' => $this->generateUrl(
                     'kitpages_file_render',
                     array(
-                        'id' => $file->getId()
+                        'id' => $file->getId(),
+                        'entityFileName' => $entityFileName
                     )
                 )
             );
@@ -65,22 +66,24 @@ class UploadController extends Controller
     {
         return $this->render('KitpagesFileBundle:Upload:upload.html.twig');
     }
-    public function widgetAction($fieldId)
+    public function widgetAction($fieldId, $entityFileName = 'default')
     {
         return $this->render(
             'KitpagesFileBundle:Upload:widget.html.twig',
             array(
                 "fieldId" => $fieldId,
+                "entityFileName" => $entityFileName,
                 "kitpages_file_session_id" => session_id()
             )
         );
     }
 
-    public function collectionWidgetAction()
+    public function collectionWidgetAction($entityFileName = 'default')
     {
         return $this->render(
             'KitpagesFileBundle:Upload:collectionWidget.html.twig',
             array(
+                "entityFileName" => $entityFileName,
                 "kitpages_file_session_id" => session_id()
             )
         );

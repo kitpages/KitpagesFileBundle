@@ -18,6 +18,7 @@
             <argument>%kitpages_file.data_dir%</argument>
             <argument>%kitpages_file.public_prefix%</argument>
             <argument>%kitpages_file.base_url%</argument>
+            <argument>%kitpages_file.entity_file_name_list%</argument>
             <argument>%kernel.root_dir%</argument>
         </service>
 

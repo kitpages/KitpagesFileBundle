@@ -6,8 +6,8 @@ namespace Kitpages\FileBundle\Model;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\DoctrineBundle\Registry;
-
 use Kitpages\FileBundle\Entity\File;
+use Kitpages\FileBundle\Entity\FileInterface;
 use Kitpages\FileBundle\Event\FileEvent;
 use Kitpages\FileBundle\KitpagesFileEvents;
 
@@ -35,6 +35,7 @@ class FileManager {
         $dataDir,
         $publicPrefix,
         $baseUrl,
+        $entityFileList,
         $kernelRootDir
     )
     {
@@ -45,7 +46,49 @@ class FileManager {
         $this->dataDir = $dataDir;
         $this->publicPrefix = $publicPrefix;
         $this->baseUrl = $baseUrl;
+        $this->entityFileList = $entityFileList;
+
+        foreach($entityFileList as $entityFile => $entityFileInfo) {
+            $entityClassList[$entityFile] = $entityFileInfo['class'];
+        }
+        $this->entityClassList = $entityClassList;
+
         $this->webRootDir = realpath($kernelRootDir.'/../web');
+    }
+
+    public function getEntityName($file) {
+        $entityFileName = array_search(get_class($file), $this->entityClassList);
+        if ($entityFileName == null) {
+            $entityFileName = array_search(get_parent_class($file), $this->entityClassList);
+        }
+        return $entityFileName;
+    }
+
+    public function getDataDirWithPrefix($entityFileName, $file = null) {
+        if ($file != null) {
+            $entityFileName = $this->getEntityName($file);
+        }
+        $prefix = $this->getDataDirPrefix($entityFileName);
+        return $this->dataDir.$prefix;
+    }
+
+
+
+    /**
+     * @return class entity
+     */
+    public function getFileClass($entityFileName)
+    {
+        $fileList = $this->entityFileList;
+        $fileClass = $fileList[$entityFileName]['class'];
+        return $fileClass;
+    }
+
+    public function getDataDirPrefix($entityFileName)
+    {
+        $fileList = $this->entityFileList;
+        $fileDataDirPrefix = $fileList[$entityFileName]['data_dir_prefix'];
+        return $fileDataDirPrefix;
     }
 
     /**
@@ -81,15 +124,17 @@ class FileManager {
     ////
     // actions
     ////
-    public function upload($tempFileName, $fileName) {
+    public function upload($tempFileName, $fileName, $entityFileName) {
         $log = $this->getLogger();
+        $log->info('start upload');
         // send on event
         $event = new FileEvent();
         $event->set('tempFileName', $tempFileName);
         $event->set('fileName', $fileName);
-        $event->set('dataDir', $this->dataDir);
-        $file = new File();
-        $file->setStatus(File::STATUS_TEMP);
+        $event->set('dataDir', $this->getDataDirWithPrefix($entityFileName));
+        $fileClass = $this->getFileClass($entityFileName);
+        $file = new $fileClass();
+        $file->setStatus(FileInterface::STATUS_TEMP);
         $file->setFileName($fileName);
         $file->setIsPrivate(false);
         $file->setData(array());
@@ -101,9 +146,11 @@ class FileManager {
             $file = $event->get('fileObject');
             $em = $this->getDoctrine()->getEntityManager();
             $em->persist($file);
+
             $this->getLogger()->info('file saved with id='.$file->getId());
 
             $em->flush();
+
             // manage upload
             $targetFileName = $this->getOriginalAbsoluteFileName($file);
             $originalDir = dirname($targetFileName);
@@ -123,7 +170,7 @@ class FileManager {
         return $file;
     }
 
-    public function delete(File $file)
+    public function delete(FileInterface $file)
     {
         $event = new FileEvent();
         $event->set('fileObject', $file);
@@ -157,7 +204,7 @@ class FileManager {
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFileUnpublish, $event);
     }
 
-    public function publish(File $file)
+    public function publish(FileInterface $file)
     {
         $event = new FileEvent();
         $event->set('fileObject', $file);
@@ -183,7 +230,7 @@ class FileManager {
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFilePublish, $event);
     }
 
-    public function getOriginalAbsoluteFileName(File $file)
+    public function getOriginalAbsoluteFileName(FileInterface $file)
     {
         $idString = (string) $file->getId();
         if (strlen($idString)== 1) {
@@ -191,42 +238,44 @@ class FileManager {
         }
         $dir = substr($idString, 0, 2);
         // manage upload
-        $originalDir = $this->dataDir.'/original/'.$dir;
+        $originalDir = $this->getDataDirWithPrefix(null, $file).'/original/'.$dir;
         $fileName = $originalDir.'/'.$file->getId().'-'.$file->getFilename();
         return $fileName;
     }
 
 
-    public function getGenerationDir(File $file)
+    public function getGenerationDir(FileInterface $file)
     {
         $idString = (string) $file->getId();
         if (strlen($idString)== 1) {
             $idString = '0'.$idString;
         }
         $dir = substr($idString, 0, 2);
-        $generationDir = $this->dataDir.'/generated/'.$dir.'/'.$file->getId();
+        $generationDir = $this->getDataDirWithPrefix(null, $file).'/generated/'.$dir.'/'.$file->getId();
         $this->getUtil()->mkdirr($generationDir);
         return $generationDir;
     }
 
-    public function getAbsoluteFilePublic(File $file)
+    public function getAbsoluteFilePublic(FileInterface $file)
     {
         $idString = (string) $file->getId();
         if (strlen($idString)== 1) {
             $idString = '0'.$idString;
         }
         $dir = substr($idString, 0, 2);
-        return $this->webRootDir.'/'.$this->publicPrefix.'/'.$dir.'/'.$file->getId();
+        $entityName = $this->getEntityName($file);
+        return $this->webRootDir.'/'.$this->publicPrefix.$this->entityFileList[$entityName]['data_dir_prefix'].'/'.$dir.'/'.$file->getId();
     }
 
-    public function getFilePublicLocation(File $file)
+    public function getFilePublicLocation(FileInterface $file)
     {
         $idString = (string) $file->getId();
         if (strlen($idString)== 1) {
             $idString = '0'.$idString;
         }
         $dir = substr($idString, 0, 2);
-        return $this->baseUrl.'/'.$this->publicPrefix.'/'.$dir.'/'.$file->getId();
+        $entityName = $this->getEntityName($file);
+        return $this->baseUrl.'/'.$this->publicPrefix.$this->entityFileList[$entityName]['data_dir_prefix'].'/'.$dir.'/'.$file->getId();
     }
 
     public function getFileLocation($id){

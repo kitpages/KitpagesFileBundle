@@ -11,25 +11,30 @@ use Kitpages\FileBundle\Entity\File;
 class RenderController extends Controller
 {
 
-    public function viewAction(){
+    public function viewAction($entityFileName){
+        $fileManager = $this->get('kitpages.file.manager');
+        $fileClass = $fileManager->getFileClass($entityFileName);
         $em = $this->getDoctrine()->getEntityManager();
         $fileManager = $this->get('kitpages.file.manager');
         $fileId = $this->getRequest()->query->get('id', null);
         if (!is_null($fileId)) {
-            $file = $em->getRepository('KitpagesFileBundle:File')->find($fileId);
+            $file = $em->getRepository($fileClass)->find($fileId);
             if ($file != null) {
                 $fileManager->getFile($fileManager->getOriginalAbsoluteFileName($file));
             }
         }
+        exit();
+        return null;
     }
 
-    public function infoAction()
+    public function infoAction($entityFileName)
     {
         $em = $this->getDoctrine()->getEntityManager();
         $fileManager = $this->get('kitpages.file.manager');
+        $fileClass = $fileManager->getFileClass($entityFileName);
         $fileId = $this->getRequest()->request->get('id', null);
         if (!is_null($fileId)) {
-            $file = $em->getRepository('KitpagesFileBundle:File')->find($fileId);
+            $file = $em->getRepository($fileClass)->find($fileId);
             if ($file != null) {
                 $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
                 $isImage = false;
@@ -44,6 +49,7 @@ class RenderController extends Controller
                     'url' => $this->generateUrl(
                         'kitpages_file_render',
                         array(
+                            'entityFileName' => $entityFileName,
                             'id' => $file->getId()
                         )
                     )
