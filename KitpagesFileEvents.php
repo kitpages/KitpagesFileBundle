@@ -3,6 +3,9 @@ namespace Kitpages\FileBundle;
 
 final class KitpagesFileEvents
 {
+    const onFileCreateFormLocale = 'kitpages.file.on_create_form_locale';
+    const afterFileCreateFormLocale = 'kitpages.file.after_create_form_locale';
+
     const onFileUpload = 'kitpages.file.on_upload';
     const afterFileUpload = 'kitpages.file.after_upload';
     

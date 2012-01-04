@@ -124,20 +124,65 @@ class FileManager {
     ////
     // actions
     ////
-    public function upload($tempFileName, $fileName, $entityFileName) {
-        $log = $this->getLogger();
-        $log->info('start upload');
-        // send on event
-        $event = new FileEvent();
-        $event->set('tempFileName', $tempFileName);
-        $event->set('fileName', $fileName);
-        $event->set('dataDir', $this->getDataDirWithPrefix($entityFileName));
+
+    public function createFile($fileName, $entityFileName) {
         $fileClass = $this->getFileClass($entityFileName);
         $file = new $fileClass();
         $file->setStatus(FileInterface::STATUS_TEMP);
         $file->setFileName($fileName);
         $file->setIsPrivate(false);
         $file->setData(array());
+        return $file;
+    }
+
+    public function createFormLocale($tempFileName, $fileName, $entityFileName) {
+        // send on event
+        $event = new FileEvent();
+        $event->set('tempFileName', $tempFileName);
+        $event->set('fileName', $fileName);
+        $event->set('dataDir', $this->getDataDirWithPrefix($entityFileName));
+
+        $file = $this->createFile($fileName, $entityFileName);
+
+        $event->set('fileObject', $file);
+        $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileCreateFormLocale, $event);
+        // default action (upload)
+        if (! $event->isDefaultPrevented()) {
+            // manage object creation
+            $file = $event->get('fileObject');
+            $em = $this->getDoctrine()->getEntityManager();
+            $em->persist($file);
+
+            $em->flush();
+
+            // manage upload
+            $targetFileName = $this->getOriginalAbsoluteFileName($file);
+            $originalDir = dirname($targetFileName);
+            $this->getUtil()->mkdirr($originalDir);
+
+            if (rename($tempFileName,$targetFileName)) {
+                $file->setHasUploadFailed(false);
+            }
+            else {
+                $file->setHasUploadFailed(true);
+            }
+            $em->flush();
+        }
+        // send after event
+        $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFileCreateFormLocale, $event);
+        return $file;
+    }
+
+
+    public function upload($tempFileName, $fileName, $entityFileName) {
+        // send on event
+        $event = new FileEvent();
+        $event->set('tempFileName', $tempFileName);
+        $event->set('fileName', $fileName);
+        $event->set('dataDir', $this->getDataDirWithPrefix($entityFileName));
+
+        $file = $this->createFile($fileName, $entityFileName);
+
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileUpload, $event);
         // default action (upload)
@@ -147,8 +192,6 @@ class FileManager {
             $em = $this->getDoctrine()->getEntityManager();
             $em->persist($file);
 
-            $this->getLogger()->info('file saved with id='.$file->getId());
-
             $em->flush();
 
             // manage upload
@@ -156,8 +199,7 @@ class FileManager {
             $originalDir = dirname($targetFileName);
             $this->getUtil()->mkdirr($originalDir);
 
-            $log->info("start doUpload, $tempFileName => $fileName => $originalDir");
-            if (move_uploaded_file($tempFileName,$targetFileName)) {
+            if (move_uploaded_file($tempFileName, $targetFileName)) {
                 $file->setHasUploadFailed(false);
             }
             else {
