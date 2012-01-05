@@ -28,7 +28,7 @@ $(document).ready(function() {
         'checkScript' : '{{ path('file_upload_check') }}',
         'cancelImg' : '{{ asset ("bundles/kitpagesfile/uploadify/cancel.png") }}',
         'folder'    : '/glouglou',
-        'buttonText': 'Upload a image',
+        'buttonText': '{{parameterList.buttonText}}',
         'scriptData' : {'kitpages_file_session_id': '{{ kitpages_file_session_id }}'},
         //'multi' : true,
         'auto'      : true,

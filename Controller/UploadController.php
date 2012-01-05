@@ -10,6 +10,11 @@ use Kitpages\FileBundle\Entity\FileInterface;
 
 class UploadController extends Controller
 {
+
+    public $defaultParameterList = array(
+        'buttonText' => 'Upload a File'
+    );
+
     public function checkAction()
     {
         $dataDir = $this->container->getParameter('kitpages_file.data_dir');
@@ -66,24 +71,32 @@ class UploadController extends Controller
     {
         return $this->render('KitpagesFileBundle:Upload:upload.html.twig');
     }
-    public function widgetAction($fieldId, $entityFileName = 'default')
+    public function widgetAction($fieldId, $entityFileName = 'default', $parameterList = array())
     {
+
+        $parameterList = array_merge($this->defaultParameterList, $parameterList);
+
         return $this->render(
             'KitpagesFileBundle:Upload:widget.html.twig',
             array(
                 "fieldId" => $fieldId,
                 "entityFileName" => $entityFileName,
+                "parameterList" => $parameterList,
                 "kitpages_file_session_id" => session_id()
             )
         );
     }
 
-    public function collectionWidgetAction($entityFileName = 'default')
+    public function collectionWidgetAction($entityFileName = 'default', $parameterList = array())
     {
+
+        $parameterList = array_merge($this->defaultParameterList, $parameterList);
+
         return $this->render(
             'KitpagesFileBundle:Upload:collectionWidget.html.twig',
             array(
                 "entityFileName" => $entityFileName,
+                "parameterList" => $parameterList,
                 "kitpages_file_session_id" => session_id()
             )
         );
