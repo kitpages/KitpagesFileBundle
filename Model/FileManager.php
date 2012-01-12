@@ -325,9 +325,9 @@ class FileManager {
     }
 
 
-    public function getFile($url)
+    public function getFile($url, $name)
     {
-        return $this->getUtil()->getFile($url, 0);
+        return $this->getUtil()->getFile($url, 0, null, $name);
     }
 
 }

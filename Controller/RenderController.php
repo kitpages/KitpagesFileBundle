@@ -20,10 +20,12 @@ class RenderController extends Controller
         if (!is_null($fileId)) {
             $file = $em->getRepository($fileClass)->find($fileId);
             if ($file != null) {
-                $fileManager->getFile($fileManager->getOriginalAbsoluteFileName($file));
+                $fileManager->getFile(
+                    $fileManager->getOriginalAbsoluteFileName($file),
+                    $file->getFileName()
+                );
             }
         }
-        exit();
         return null;
     }
 
