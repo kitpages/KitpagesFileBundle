@@ -1,0 +1,31 @@
+var kitFileUploadList = uploadList.kitFileUploadList({
+        isMulti: {% if multi %}true{% else %}false{% endif %},
+        urlDeletePng: '{{ asset ("bundles/kitpagesfile/icon/delete.png") }}',
+        urlArrowUpPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-up.png") }}',
+        urlArrowDownPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-down.png") }}'
+});
+
+fieldList.kitFileUploadField({
+    boundingBoxList: uploadList,
+    event_add: 'after_add_kitFileUploadList',
+    event_delete: 'after_delete_kitFileUploadList',
+    event_moveUp: 'after_moveUp_kitFileUploadList',
+    event_moveDown: 'after_moveDown_kitFileUploadList',
+    isMulti: {% if multi %}true{% else %}false{% endif %}
+})
+
+fieldUpoadify.uploadify({
+    'uploader'  : '{{ asset ("bundles/kitpagesfile/uploadify/uploadify.swf") }}',
+    'script'    : '{{ path('file_upload_do_upload', {'entityFileName' :entityFileName}) }}',
+    'checkScript' : '{{ path('file_upload_check') }}',
+    'cancelImg' : '{{ asset ("bundles/kitpagesfile/uploadify/cancel.png") }}',
+    'folder'    : '/glouglou',
+    'buttonText': '{{parameterList.buttonText}}',
+    'scriptData' : {'kitpages_file_session_id': '{{ kitpages_file_session_id }}'},
+    'multi' : {% if multi %}true{% else %}false{% endif %},
+    'auto'      : true,
+    'onComplete' : function(event, ID, fileObj, response, data) {
+        var tab = $.parseJSON(response);
+        uploadList.trigger("add_kitFileUploadList", [tab]);
+    }
+});

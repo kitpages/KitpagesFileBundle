@@ -15,10 +15,8 @@
 }
 
 .kit-file-image-list li a {
+    float:right;
     display: block;
-    position: absolute;
-    right: 5px;
-    top: 5px;
     cursor: pointer;
 }
 

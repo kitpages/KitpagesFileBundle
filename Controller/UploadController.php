@@ -67,11 +67,7 @@ class UploadController extends Controller
         return new Response( '0' );
     }
 
-    public function uploadAction()
-    {
-        return $this->render('KitpagesFileBundle:Upload:upload.html.twig');
-    }
-    public function widgetAction($fieldId, $entityFileName = 'default', $parameterList = array())
+    public function widgetAction($fieldId, $multi=false, $entityFileName = 'default', $parameterList = array())
     {
 
         $parameterList = array_merge($this->defaultParameterList, $parameterList);
@@ -80,6 +76,7 @@ class UploadController extends Controller
             'KitpagesFileBundle:Upload:widget.html.twig',
             array(
                 "fieldId" => $fieldId,
+                "multi" => $multi,
                 "entityFileName" => $entityFileName,
                 "parameterList" => $parameterList,
                 "kitpages_file_session_id" => session_id()
@@ -87,14 +84,14 @@ class UploadController extends Controller
         );
     }
 
-    public function collectionWidgetAction($entityFileName = 'default', $parameterList = array())
+    public function collectionWidgetAction($entityFileName = 'default', $multi=false, $parameterList = array())
     {
-
         $parameterList = array_merge($this->defaultParameterList, $parameterList);
 
         return $this->render(
-            'KitpagesFileBundle:Upload:collectionWidget.html.twig',
+            'KitpagesFileBundle:Upload:widgetJs.html.twig',
             array(
+                "multi" => $multi,
                 "entityFileName" => $entityFileName,
                 "parameterList" => $parameterList,
                 "kitpages_file_session_id" => session_id()
