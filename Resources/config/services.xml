@@ -13,12 +13,14 @@
         <service id="kitpages.file.manager" class="%kitpages_file.fileManager.class%">
             <argument type="service" id="doctrine"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="router"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="kitpages.util"/>
             <argument>%kitpages_file.data_dir%</argument>
             <argument>%kitpages_file.public_prefix%</argument>
             <argument>%kitpages_file.base_url%</argument>
             <argument>%kitpages_file.entity_file_name_list%</argument>
+            <argument>%kitpages_file.type_list%</argument>
             <argument>%kernel.root_dir%</argument>
         </service>
 
@@ -28,6 +30,14 @@
         </service>
         <service id="kitpages.file.twig.extension.catalog" class="Kitpages\FileBundle\Twig\Extension\FileExtension">
             <tag name="twig.extension" />
+        </service>
+        <service id="kit_file.image.resize.form" class="Kitpages\FileBundle\Form\Image\ResizeForm">
+        </service>
+        <service id="kit_file.image.resize.form.handler" class="Kitpages\FileBundle\Form\Image\ResizeFormHandler">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="request" strict="false" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="kitpages.file.manager"/>
         </service>
     </services>
 

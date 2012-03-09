@@ -38,24 +38,8 @@ class RenderController extends Controller
         if (!is_null($fileId)) {
             $file = $em->getRepository($fileClass)->find($fileId);
             if ($file != null) {
-                $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
-                $isImage = false;
-                if (in_array($ext, array('jpg', 'jpeg', 'png', 'gif', 'webp'))) {
-                    $isImage = true;
-                }
-                $data = array(
-                    'id' => $file->getId(),
-                    'fileName' => $file->getFilename(),
-                    'fileExtension' => $ext,
-                    'isImage' => $isImage,
-                    'url' => $this->generateUrl(
-                        'kitpages_file_render',
-                        array(
-                            'entityFileName' => $entityFileName,
-                            'id' => $file->getId()
-                        )
-                    )
-                );
+                $data = $fileManager->fileDataJson($file, $entityFileName);
+
                 return new Response( json_encode($data) );
             }
         }

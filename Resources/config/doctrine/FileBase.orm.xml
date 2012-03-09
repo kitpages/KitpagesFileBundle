@@ -19,6 +19,13 @@
 
         <field name="status" column="status" type="string" length="250" />
 
+        <field name="type" column="type" type="string" length="250" nullable="true" />
+
+        <field name="mimeType" column="mime_type" type="string" length="250" nullable="true" />
+
+        <field name="originalId" column="original_id" type="string" length="250" nullable="true" />
+
+        <field name="renderHtml" column="render_html" type="string" length="250" nullable="true" />
 
         <field name="createdAt" type="datetime" nullable="true" >
             <gedmo:timestampable on="create"/>

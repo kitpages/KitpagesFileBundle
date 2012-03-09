@@ -44,24 +44,8 @@ class UploadController extends Controller
         $fileManager = $this->getFileManager();
         $file = $fileManager->upload($_FILES['Filedata']['tmp_name'], $_FILES['Filedata']['name'], $entityFileName);
         if ( $file instanceof FileInterface) {
-            $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
-            $isImage = false;
-            if (in_array($ext, array('jpg', 'jpeg', 'png', 'gif', 'webp'))) {
-                $isImage = true;
-            }
-            $data = array(
-                'id' => $file->getId(),
-                'fileName' => $file->getFilename(),
-                'fileExtension' => $ext,
-                'isImage' => $isImage,
-                'url' => $this->generateUrl(
-                    'kitpages_file_render',
-                    array(
-                        'id' => $file->getId(),
-                        'entityFileName' => $entityFileName
-                    )
-                )
-            );
+            $data = $fileManager->fileDataJson($file, $entityFileName);
+
             return new Response( json_encode($data) );
         }
         return new Response( '0' );
@@ -69,7 +53,6 @@ class UploadController extends Controller
 
     public function widgetAction($fieldId, $multi=false, $entityFileName = 'default', $parameterList = array())
     {
-
         $parameterList = array_merge($this->defaultParameterList, $parameterList);
 
         return $this->render(

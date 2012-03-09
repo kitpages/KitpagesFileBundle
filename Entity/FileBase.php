@@ -195,4 +195,104 @@ class FileBase implements FileInterface {
         return $this->status;
     }
 
+    /**
+     * @var string $type
+     */
+    private $type;
+
+    /**
+     * @var string $mimeType
+     */
+    private $mimeType;
+
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string 
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set mimeType
+     *
+     * @param string $mimeType
+     */
+    public function setMimeType($mimeType)
+    {
+        $this->mimeType = $mimeType;
+    }
+
+    /**
+     * Get mimeType
+     *
+     * @return string 
+     */
+    public function getMimeType()
+    {
+        return $this->mimeType;
+    }
+    /**
+     * @var string $renderHtml
+     */
+    private $renderHtml;
+
+
+    /**
+     * Set renderHtml
+     *
+     * @param string $renderHtml
+     */
+    public function setRenderHtml($renderHtml)
+    {
+        $this->renderHtml = $renderHtml;
+    }
+
+    /**
+     * Get renderHtml
+     *
+     * @return string 
+     */
+    public function getRenderHtml()
+    {
+        return $this->renderHtml;
+    }
+    /**
+     * @var string $originalId
+     */
+    private $originalId;
+
+
+    /**
+     * Set originalId
+     *
+     * @param string $originalId
+     */
+    public function setOriginalId($originalId)
+    {
+        $this->originalId = $originalId;
+    }
+
+    /**
+     * Get originalId
+     *
+     * @return string 
+     */
+    public function getOriginalId()
+    {
+        return $this->originalId;
+    }
 }

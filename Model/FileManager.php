@@ -6,6 +6,7 @@ namespace Kitpages\FileBundle\Model;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\DoctrineBundle\Registry;
+use Symfony\Component\Routing\RouterInterface;
 use Kitpages\FileBundle\Entity\File;
 use Kitpages\FileBundle\Entity\FileInterface;
 use Kitpages\FileBundle\Event\FileEvent;
@@ -20,6 +21,7 @@ class FileManager {
     ////
     protected $dispatcher = null;
     protected $doctrine = null;
+    protected $router = null;
     protected $logger = null;
     protected $util = null;
     protected $dataDir = null;
@@ -30,23 +32,27 @@ class FileManager {
     public function __construct(
         Registry $doctrine,
         EventDispatcherInterface $dispatcher,
+        RouterInterface $router,
         LoggerInterface $logger,
         Util $util,
         $dataDir,
         $publicPrefix,
         $baseUrl,
         $entityFileList,
+        $typeList,
         $kernelRootDir
     )
     {
         $this->dispatcher = $dispatcher;
         $this->doctrine = $doctrine;
+        $this->router = $router;
         $this->logger = $logger;
         $this->util = $util;
         $this->dataDir = $dataDir;
         $this->publicPrefix = $publicPrefix;
         $this->baseUrl = $baseUrl;
         $this->entityFileList = $entityFileList;
+        $this->typeList = $typeList;
 
         foreach($entityFileList as $entityFile => $entityFileInfo) {
             $entityClassList[$entityFile] = $entityFileInfo['class'];
@@ -54,6 +60,20 @@ class FileManager {
         $this->entityClassList = $entityClassList;
 
         $this->webRootDir = realpath($kernelRootDir.'/../web');
+    }
+
+
+    public function getTypeList() {
+        return $this->typeList;
+    }
+
+    public function getType($type) {
+        return $this->typeList[$type];
+    }
+
+    public function getActionOnFile($type, $action) {
+        $typeInfo = $this->getType($type);
+        return $typeInfo[$action];
     }
 
     public function getEntityName($file) {
@@ -125,13 +145,72 @@ class FileManager {
     // actions
     ////
 
-    public function createFile($fileName, $entityFileName) {
+    public function fileDataJson($file, $entityFileName) {
+        $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
+        $data = array(
+            'id' => $file->getId(),
+            'fileName' => $file->getFilename(),
+            'fileExtension' => $ext,
+            'fileType' => $file->getType(),
+            'url' => $this->router->generate(
+                'kitpages_file_render',
+                array(
+                    'entityFileName' => $entityFileName,
+                    'id' => $file->getId()
+                )
+            )
+
+        );
+
+        if (count($this->typeList[$file->getType()]) > 0) {
+            $data['actionList']['Action'] = $this->router->generate('kitpages_file_actionOnFile_widgetEmpty');
+            foreach($this->typeList[$file->getType()] as $action=>$actionInfo) {
+                if ($actionInfo['url'] != null) {
+                    $data['actionList'][$action] = $this->router->generate($actionInfo['url']);
+                } else {
+                    $data['actionList'][$action] = $this->router->generate(
+                        'kitpages_file_actionOnFile_widget',
+                        array(
+                            'typeFile' => $file->getType(),
+                            'actionFile' => $action
+                        )
+                    );
+                }
+            }
+        }
+       return $data;
+    }
+
+    public function renderHtml($type, $fileName) {
+        $html = '';
+        if($type == 'image'){
+            $html = '<img src="[[file:url]]">';
+        } elseif ($type == 'video') {
+
+        } elseif ($type == 'application') {
+            $html = '<a href="[[file:url]]">'.$fileName.'</a>';
+        }
+
+        return $html;
+    }
+
+    public function createFile($fileName, $entityFileName, $mimeType) {
         $fileClass = $this->getFileClass($entityFileName);
+
+
         $file = new $fileClass();
         $file->setStatus(FileInterface::STATUS_TEMP);
         $file->setFileName($fileName);
         $file->setIsPrivate(false);
         $file->setData(array());
+
+        $typeList = explode('/', $mimeType);
+        $file->setType($typeList[0]);
+        $file->setMimeType($mimeType);
+
+//        $file->setRenderHtml($this->renderHtml($typeList[0], $fileName));
+        //$file->setRenderHtml('test');
+
         return $file;
     }
 
@@ -142,7 +221,11 @@ class FileManager {
         $event->set('fileName', $fileName);
         $event->set('dataDir', $this->getDataDirWithPrefix($entityFileName));
 
-        $file = $this->createFile($fileName, $entityFileName);
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $tempFileName);
+        finfo_close($finfo);
+
+        $file = $this->createFile($fileName, $entityFileName, $mimeType);
 
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileCreateFormLocale, $event);
@@ -181,7 +264,11 @@ class FileManager {
         $event->set('fileName', $fileName);
         $event->set('dataDir', $this->getDataDirWithPrefix($entityFileName));
 
-        $file = $this->createFile($fileName, $entityFileName);
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $tempFileName);
+        finfo_close($finfo);
+
+        $file = $this->createFile($fileName, $entityFileName, $mimeType);
 
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileUpload, $event);

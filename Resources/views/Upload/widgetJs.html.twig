@@ -27,5 +27,6 @@ fieldUpoadify.uploadify({
     'onComplete' : function(event, ID, fileObj, response, data) {
         var tab = $.parseJSON(response);
         uploadList.trigger("add_kitFileUploadList", [tab]);
+
     }
 });

@@ -13,6 +13,7 @@
                 moveDown: null,
                 add: null,
                 delete: null,
+                actionList: null,
                 fileList: new Array()
             };
             if (options) {
@@ -33,7 +34,7 @@
         WidgetList.prototype = {
             init: function() {
                 var self = this;
-                var eventList = ['render', 'moveUp', 'moveDown', 'add', 'delete', 'renumbering', 'populate'];
+                var eventList = ['render', 'moveUp', 'moveDown', 'add', 'delete', 'renumbering', 'populate', 'actionList'];
                 // init custom events according to settings callback values
                 for (var i = 0 ; i < eventList.length ; i++ ) {
                     if (this._settings[eventList[i]]) {
@@ -50,26 +51,36 @@
                     "a.kit-file-upload-list-delete",
                     "click",
                     function() {
-                        var buttonDelete = $(this);
-                        self._boundingBox.trigger("delete_kitFileUploadList", [buttonDelete]);
+                        var button = $(this);
+                        self._boundingBox.trigger("delete_kitFileUploadList", [button]);
                     }
                 );
                 self._boundingBox.delegate(
                     "a.kit-file-upload-list-move-up",
                     "click",
                     function() {
-                        var buttonDelete = $(this);
-                        self._boundingBox.trigger("moveUp_kitFileUploadList", [buttonDelete]);
+                        var button = $(this);
+                        self._boundingBox.trigger("moveUp_kitFileUploadList", [button]);
                     }
                 );
                 self._boundingBox.delegate(
                     "a.kit-file-upload-list-move-down",
                     "click",
                     function() {
-                        var buttonDelete = $(this);
-                        self._boundingBox.trigger("moveDown_kitFileUploadList", [buttonDelete]);
+                        var button = $(this);
+                        self._boundingBox.trigger("moveDown_kitFileUploadList", [button]);
                     }
                 );
+                self._boundingBox.delegate(
+                    ".kit-file-upload-action-list",
+                    "change",
+                    function() {
+                        var button = $(this);
+                        self._boundingBox.trigger("actionList_kitFileUploadList", [button]);
+                    }
+                );
+
+
             },
             ////
             // callbacks
@@ -121,6 +132,13 @@
                 var self = event.data.self;
                 self._moveDown(buttonElement);
             },
+            _actionListCallback: function(event, buttonElement) {
+                if (event.isDefaultPrevented()) {
+                    return;
+                }
+                var self = event.data.self;
+                self._actionList(buttonElement);
+            },
             ////
             // real methods that do something
             ////
@@ -153,20 +171,36 @@
                         '</a>'
                 }
 
-                if (fileInfo.isImage) {
+                if (fileInfo.fileType == 'image') {
                     iconHtml = '<img src="'+fileInfo.url+'"/>';
                 }
                 else {
                     iconHtml = '<div class="kit-file-upload-list-document-icon"><div>'+fileInfo.fileExtension+'</div></div>';
                 }
+
+                var selectAction = '';
+                var countActionList = 0;
+                var actionList = fileInfo.actionList;
+                $.each(actionList, function(index, action) {
+                    if (countActionList == 0) {
+                        selectAction = '<div class="kit-file-upload-action"></div><select class="kit-file-upload-action-list">';
+                    }
+                    selectAction = selectAction + '<option value="' + action  + '">' + index + '</option>';
+                    countActionList++;
+                });
+                if (selectAction != '') {
+                    selectAction = selectAction + '</select>';
+                }
                 self._boundingBox.append(
-                    '<li  data-kitfileuploadlist-id="' + fileInfo.id + '" >' +
+                    '<li data-kitfileuploadlist-id="' + fileInfo.id + '" >' +
                         '<a class="kit-file-upload-list-delete" >'+
                         '<img src="' + self._settings.urlDeletePng + '" width="20" height="20" alt="[X]"/>'+
-                        '</a>' +
-                            buttonMoveList
-                            + iconHtml+' '+
-                            fileInfo.fileName+
+                        '</a>'
+                            + buttonMoveList
+                            + selectAction
+                            + iconHtml+' '
+                            + fileInfo.fileName
+                            + '<div  style="clear:both"></div>' +
                     '</li>'
                 );
                 self._boundingBox.trigger("after_add_kitFileUploadList", [fileInfo, index]);
@@ -195,6 +229,23 @@
                 var idCountMove = buttonElement.parent().data('kitfileuploadlist-id');
                 element.next().after(element);
                 self._boundingBox.trigger("after_moveDown_kitFileUploadList", idCountMove);
+            },
+            _actionList: function(buttonElement) {
+                var self = this;
+                var element = buttonElement.parent();
+                var fileId = element.data('kitfileuploadlist-id');
+                $.ajax({
+                    type: "POST",
+                    url: buttonElement.val(),
+                    dataType: 'html',
+                    data: "id="+fileId,
+                    success: function(dataHtml) {
+                        element.children('.kit-file-upload-action').html(dataHtml);
+                        self._boundingBox.trigger("after_actionList_kitFileUploadList", fileId);
+                    }
+                });
+
+                return;
             },
             ////
             // external methods

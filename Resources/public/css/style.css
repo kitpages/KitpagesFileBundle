@@ -1,26 +1,40 @@
-.kit-file-image-list {
+.kit-file-upload-action {
+    float:right;
+    margin:0 10px;
+}
+.kit-file-upload-action label{
+    float:left;
+    width:100px;
+}
+.kit-file-upload-action input{
+    width:80px;;
+}
+.kit-file-upload-action-list{
+    float:right;
+}
+.kit-file-upload-list {
     list-style: none;
     margin: 0px;
 }
 
-.kit-file-image-list li {
+.kit-file-upload-list li {
     position: relative;
     margin: 3px;
     padding: 2px;
     border: 1px solid #CCCCCC;
 }
 
-.kit-file-image-list li:hover {
+.kit-file-upload-list li:hover {
     background-color: #FFFFAA;
 }
 
-.kit-file-image-list li a {
+.kit-file-upload-list li a {
     float:right;
     display: block;
     cursor: pointer;
 }
 
-.kit-file-image-list li img {
+.kit-file-upload-list li img {
     max-height: 60px;
     max-width: 100px;
     vertical-align: middle;

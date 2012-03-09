@@ -50,6 +50,9 @@ class KitpagesFileExtension extends Extension
         $this->remapParameters($config, $container, array(
             'entity_file_name_default'  => 'kitpages_file.entity_file_name_default'
         ));
+        $this->remapParameters($config, $container, array(
+            'type_list'  => 'kitpages_file.type_list'
+        ));
     }
 
     public function getAlias()

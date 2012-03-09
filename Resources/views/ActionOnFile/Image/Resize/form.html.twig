@@ -1,0 +1,6 @@
+<div>
+    <form class="kit-file-actiononfile-form" action="{{ path ('kitpages_file_actionOnFile_do', {'typeFile':typeFile,'actionFile':actionFile}) }}" method="post" {{ form_enctype(form) }}>
+        {{ form_widget(form) }}
+        <input type="submit" />
+    </form>
+</div>
