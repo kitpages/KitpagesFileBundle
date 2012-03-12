@@ -7,6 +7,10 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Form\FormError;
+
+use Imagine\Image\Box;
+use Imagine\Filter\Transformation;
+
 use Kitpages\FileBundle\Model\FileManager;
 
 class ResizeFormHandler
@@ -14,15 +18,22 @@ class ResizeFormHandler
     protected $request;
     protected $doctrine;
 
-    public function __construct(Registry $doctrine, Request $request, $validator, FileManager $fileManager)
+    public function __construct(
+        Registry $doctrine,
+        Request $request,
+        $validator,
+        FileManager $fileManager,
+        $library
+    )
     {
         $this->doctrine = $doctrine;
         $this->request = $request;
         $this->validator = $validator;
         $this->fileManager = $fileManager;
+        $this->library = $library;
     }
 
-    public function process(Form $form, $formFile)
+    public function process(Form $form, $formFile, $entityFileName)
     {
         $versionErrorList = array();
         if ($this->request->getMethod() == 'POST' && $this->request->request->get($form->getName()) !== null) {
@@ -30,9 +41,29 @@ class ResizeFormHandler
 
             if ($form->isValid()) {
                 $dataForm = $this->request->request->get($formFile->getName());
-                $em = $this->doctrine->getEntityManager();
-            }
+                $fileClass = $this->fileManager->getFileClass($entityFileName);
+                $fileId = $dataForm['fileId'];
+                if (!is_null($fileId)) {
+                    $em = $this->doctrine->getEntityManager();
+                    $file = $em->getRepository($fileClass)->find($fileId);
 
+
+                    $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
+                    $tmpFileName = tempnam($this->fileManager->getDataDirWithPrefix($entityFileName), $fileId).'.'.$ext;
+
+                    $imagine = $this->library;
+                    $image = $imagine->load(file_get_contents($this->fileManager->getOriginalAbsoluteFileName($file)));
+                    $size  = new Box($dataForm['width'], $dataForm['height']);
+                    $transformation = new Transformation();
+                    $transformation->resize($size)
+                        ->save($tmpFileName)
+                        ->apply($image);
+
+                    $fileVersion = $this->fileManager->createFormLocale($tmpFileName, $file->getFileName(), $entityFileName, $file);
+                    return $fileVersion;
+                }
+
+            }
             foreach($versionErrorList as $level => $versionError) {
                 foreach($versionError as $error) {
                     $formErrorVersion = new FormError($error->getMessage(), array('%level%' => $level));
@@ -40,7 +71,7 @@ class ResizeFormHandler
                 }
             }
         }
-        return false;
+        return null;
     }
 
 
@@ -55,7 +86,6 @@ class ResizeFormHandler
             $errorHtml .= '<li>'.$error.'</li>';
         }
         $errorHtml .= '</ul>';
-
         return $errorHtml;
     }
 

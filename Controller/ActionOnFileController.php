@@ -12,62 +12,50 @@ class ActionOnFileController extends Controller
 {
     public function widgetEmptyAction() {
         return new Response();
-
     }
 
-    public function widgetAction($typeFile, $actionFile) {
-        $fileId = $this->getRequest()->query->get("id", null);
-
+    public function widgetAction($entityFileName, $typeFile, $actionFile) {
+        $fileId = $this->getRequest()->request->get("id", null);
         $fileManager = $this->get('kitpages.file.manager');
+
+        $fileClass = $fileManager->getFileClass($entityFileName);
+        $em = $em = $this->getDoctrine()->getEntityManager();
+        $file = $em->getRepository($fileClass)->find($fileId);
+
+
         $action = $fileManager->getActionOnFile($typeFile, $actionFile);
 
         $formFile = $this->container->get($action['form']);
-        $formFile->setFileId($fileId);
-        $form   = $this->createForm($formFile);
 
-//        $formHandler = $this->container->get($action['handler_form']);
-//        $process = $formHandler->process($form, $formFile);
-//
-//        if ($process) {
-////            $target = $request->query->get('kitpages_target', null);
-////            if ($target) {
-////                return $this->redirect($target);
-////            }
-//            return new Response();
-//        }
+        $formFile->setFile($file);
+        $form   = $this->createForm($formFile);
 
         return $this->render(
             $action['form_twig'],
             array(
                 'form' => $form->createView(),
+                'entityFileName'=>$entityFileName,
                 'typeFile'=>$typeFile,
                 'actionFile'=>$actionFile
             )
         );
     }
 
-    public function doAction($typeFile, $actionFile) {
-        $fileId = $this->getRequest()->query->get("id", null);
-
+    public function doAction($entityFileName, $typeFile, $actionFile) {
         $fileManager = $this->get('kitpages.file.manager');
         $action = $fileManager->getActionOnFile($typeFile, $actionFile);
 
         $formFile = $this->container->get($action['form']);
-        $formFile->setFileId($fileId);
         $form   = $this->createForm($formFile);
 
         $formHandler = $this->container->get($action['handler_form']);
-        $process = $formHandler->process($form, $formFile);
+        $fileVersion = $formHandler->process($form, $formFile, $entityFileName);
 
-        if ($process) {
-//            $target = $request->query->get('kitpages_target', null);
-//            if ($target) {
-//                return $this->redirect($target);
-//            }
-            return new Response();
+        if (!is_null($fileVersion)) {
+            $data = $fileManager->fileDataJson($fileVersion, $entityFileName);
+            return new Response( json_encode($data) );
         }
         return new Response();
-
     }
 
 //    public function widgetResizeImageAction() {

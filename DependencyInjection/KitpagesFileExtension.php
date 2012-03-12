@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Alias;
 
 use Kitpages\FileBundle\DependencyInjection\Configuration;
 
@@ -53,6 +54,15 @@ class KitpagesFileExtension extends Extension
         $this->remapParameters($config, $container, array(
             'type_list'  => 'kitpages_file.type_list'
         ));
+
+
+        $typeList = $container->getParameter('kitpages_file.type_list');
+
+        foreach($typeList as $type => $actionList) {
+            foreach($actionList as $action => $actionInfo) {
+                $container->setAlias('kitpages_file.'.$type.'.'.$action.'.library', new Alias('kitpages.file.'.$actionInfo['library']));
+            }
+        }
     }
 
     public function getAlias()

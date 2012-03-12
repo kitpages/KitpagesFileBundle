@@ -7,33 +7,36 @@ use Kitpages\FileBundle\Form\FileActionForm;
 
 class ResizeForm extends FileActionForm
 {
+
     public function buildForm(FormBuilder $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
+        $ratioFieldParameter = array('label'=>'keep the ratio', 'required' => false);
+        $widthFieldParameter = array('label'=>'Width', 'required' => false);
+        $heightFieldParameter = array("label" => "Height", 'required' => false);
+        if ($this->file != null) {
+            $fileInfo = getimagesize($this->fileManager->getOriginalAbsoluteFileName($this->file));
+            $widthFieldParameter['data'] = $fileInfo[0];
+            $heightFieldParameter['data'] = $fileInfo[1];
+            $ratioFieldParameter['data'] = true;
+        }
+
         $builder->add(
-            'percentage',
-            'text',
-            array(
-                "label" => "Percentage",
-                'required' => false
-            )
+            'ratio',
+            'checkbox',
+            $ratioFieldParameter
         );
+
         $builder->add(
             'width',
             'text',
-            array(
-                "label" => "Width",
-                'required' => false
-            )
+            $widthFieldParameter
         );
         $builder->add(
             'height',
             'text',
-            array(
-                "label" => "Height",
-                'required' => false
-            )
+            $heightFieldParameter
         );
     }
 

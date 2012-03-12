@@ -147,11 +147,18 @@ class FileManager {
 
     public function fileDataJson($file, $entityFileName) {
         $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
+
+        $parentId = '';
+        if ($file->getParent() instanceof FileInterface) {
+            $parentId = $file->getParent()->getId();
+        }
+
         $data = array(
             'id' => $file->getId(),
             'fileName' => $file->getFilename(),
             'fileExtension' => $ext,
             'fileType' => $file->getType(),
+            'fileParent' => $parentId,
             'url' => $this->router->generate(
                 'kitpages_file_render',
                 array(
@@ -159,7 +166,6 @@ class FileManager {
                     'id' => $file->getId()
                 )
             )
-
         );
 
         if (count($this->typeList[$file->getType()]) > 0) {
@@ -171,6 +177,7 @@ class FileManager {
                     $data['actionList'][$action] = $this->router->generate(
                         'kitpages_file_actionOnFile_widget',
                         array(
+                            'entityFileName' => $entityFileName,
                             'typeFile' => $file->getType(),
                             'actionFile' => $action
                         )
@@ -214,7 +221,7 @@ class FileManager {
         return $file;
     }
 
-    public function createFormLocale($tempFileName, $fileName, $entityFileName) {
+    public function createFormLocale($tempFileName, $fileName, $entityFileName, $fileParent = null) {
         // send on event
         $event = new FileEvent();
         $event->set('tempFileName', $tempFileName);
@@ -226,6 +233,8 @@ class FileManager {
         finfo_close($finfo);
 
         $file = $this->createFile($fileName, $entityFileName, $mimeType);
+        $file->setParent($fileParent);
+
 
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileCreateFormLocale, $event);

@@ -1,6 +1,57 @@
 <div>
-    <form class="kit-file-actiononfile-form" action="{{ path ('kitpages_file_actionOnFile_do', {'typeFile':typeFile,'actionFile':actionFile}) }}" method="post" {{ form_enctype(form) }}>
+    <form class="kit-file-actiononfile-form" action="{{ path ('kitpages_file_actionOnFile_do', {'typeFile':typeFile,'actionFile':actionFile,'entityFileName':entityFileName}) }}" method="post" {{ form_enctype(form) }}>
         {{ form_widget(form) }}
         <input type="submit" />
     </form>
 </div>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+    var ratio{{form.fileId.vars.value}} = $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[width]"]').val() / $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[height]"]').val();
+
+
+    {#$('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] .kit-file-actiononfile-form').submit(function() {#}
+        {#var form = $(this);#}
+        {#$.ajax({#}
+            {#type: 'POST',#}
+            {#url: form.attr('action'),#}
+            {#dataType: 'json',#}
+            {#data: form.serialize(),#}
+            {#success: function(data) {#}
+                {#uploadList.trigger("add_kitFileUploadList", [data]);#}
+            {#}#}
+        {#});#}
+        {#return false;#}
+    {#});#}
+
+    $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[ratio]"]').change(function() {
+        var input = $(this);
+        var ratio = input.attr('checked');
+        if (ratio != "undefined" && ratio == 'checked') {
+            var inputHeight = $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[height]"]');
+            var widthValue = parseInt($('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[width]"]').val());
+            inputHeight.val(Math.round(widthValue/ratio{{form.fileId.vars.value}}));
+        }
+    });
+    $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[width]"]').change(function() {
+        var ratio = $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[ratio]"]').attr('checked');
+        if (ratio != "undefined" && ratio == 'checked') {
+            var input = $(this);
+            var inputHeight = $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[height]"]');
+            var widthValue = parseInt(input.val());
+            inputHeight.val(Math.round(widthValue/ratio{{form.fileId.vars.value}}));
+        }
+    });
+    $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[height]"]').change(function() {
+        var ratio = $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[ratio]"]').attr('checked');
+        if (ratio != "undefined" && ratio == 'checked') {
+            var input = $(this);
+            var inputWidth = $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[width]"]');
+            var heightValue = parseInt(input.val());
+            inputWidth.val(Math.round(heightValue*ratio{{form.fileId.vars.value}}));
+        }
+    });
+});
+</script>

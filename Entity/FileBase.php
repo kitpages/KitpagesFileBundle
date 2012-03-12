@@ -270,29 +270,5 @@ class FileBase implements FileInterface {
     {
         return $this->renderHtml;
     }
-    /**
-     * @var string $originalId
-     */
-    private $originalId;
 
-
-    /**
-     * Set originalId
-     *
-     * @param string $originalId
-     */
-    public function setOriginalId($originalId)
-    {
-        $this->originalId = $originalId;
-    }
-
-    /**
-     * Get originalId
-     *
-     * @return string 
-     */
-    public function getOriginalId()
-    {
-        return $this->originalId;
-    }
 }

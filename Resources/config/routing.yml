@@ -22,21 +22,21 @@ kitpages_file_actionOnFile_widgetEmpty:
     defaults: { _controller: KitpagesFileBundle:ActionOnFile:widgetEmpty }
 # default
 kitpages_file_actionOnFile_widget:
-    pattern:  /fileAction/{typeFile}/{actionFile}
-    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widget }
+    pattern:  /fileAction/{entityFileName}/{typeFile}/{actionFile}
+    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widget, entityFileName:default }
 
 kitpages_file_actionOnFile_do:
-    pattern:  /doAction/{typeFile}/{actionFile}
-    defaults: { _controller: KitpagesFileBundle:ActionOnFile:do }
+    pattern:  /doAction/{entityFileName}/{typeFile}/{actionFile}
+    defaults: { _controller: KitpagesFileBundle:ActionOnFile:do, entityFileName:default }
 
-kitpages_file_actionOnFile_widgetResizeImage:
-    pattern:  /resizeImage
-    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widgetResizeImage }
-
-kitpages_file_actionOnFile_doResizeImage:
-    pattern:  /doResizeImage
-    defaults: { _controller: KitpagesFileBundle:ActionOnFile:doResizeImage }
-
-kitpages_file_actionOnFile_widgetCropImage:
-    pattern:  /cropImage
-    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widgetCropImage }
+#kitpages_file_actionOnFile_widgetResizeImage:
+#    pattern:  /resizeImage
+#    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widgetResizeImage }
+#
+#kitpages_file_actionOnFile_doResizeImage:
+#    pattern:  /doResizeImage
+#    defaults: { _controller: KitpagesFileBundle:ActionOnFile:doResizeImage }
+#
+#kitpages_file_actionOnFile_widgetCropImage:
+#    pattern:  /cropImage
+#    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widgetCropImage }

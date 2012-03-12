@@ -7,9 +7,19 @@
     <parameters>
         <parameter key="kitpages_file.fileManager.class">Kitpages\FileBundle\Model\FileManager</parameter>
         <parameter key="kitpages_file.sessionListener.class">Kitpages\FileBundle\EventListener\SessionListener</parameter>
+        <parameter key="imagine.gd.class">Imagine\Gd\Imagine</parameter>
+        <parameter key="imagine.imagick.class">Imagine\Imagick\Imagine</parameter>
+        <parameter key="imagine.gmagick.class">Imagine\Gmagick\Imagine</parameter>
     </parameters>
 
     <services>
+
+        <service id="kitpages.file.imagine.gd" class="%imagine.gd.class%" />
+
+        <service id="kitpages.file.imagine.imagick" class="%imagine.imagick.class%" />
+
+        <service id="kitpages.file.imagine.gmagick" class="%imagine.gmagick.class%" />
+
         <service id="kitpages.file.manager" class="%kitpages_file.fileManager.class%">
             <argument type="service" id="doctrine"/>
             <argument type="service" id="event_dispatcher"/>
@@ -32,12 +42,14 @@
             <tag name="twig.extension" />
         </service>
         <service id="kit_file.image.resize.form" class="Kitpages\FileBundle\Form\Image\ResizeForm">
+            <argument type="service" id="kitpages.file.manager"/>
         </service>
         <service id="kit_file.image.resize.form.handler" class="Kitpages\FileBundle\Form\Image\ResizeFormHandler">
             <argument type="service" id="doctrine" />
             <argument type="service" id="request" strict="false" />
             <argument type="service" id="validator" />
             <argument type="service" id="kitpages.file.manager"/>
+            <argument type="service" id="kitpages_file.image.resize.library" />
         </service>
     </services>
 

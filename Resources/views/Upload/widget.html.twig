@@ -3,7 +3,6 @@
 $(document).ready(function() {
 
     var fieldId = '{{ fieldId }}';
-
     var uploadList = $("#kit-file-container-{{ fieldId }} ul.kit-file-upload-list");
     var fieldList = $("#{{ fieldId }}");
     var fieldUpoadify = $('#kit-file-upload-{{ fieldId }}');
@@ -49,6 +48,19 @@ $(document).ready(function() {
         }
     {% endif %}
 
+    $('.kit-file-upload-list').delegate('.kit-file-actiononfile-form', 'submit', function() {
+        var form = $(this);
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            dataType: 'json',
+            data: form.serialize(),
+            success: function(data) {
+                uploadList.trigger("addVersion_kitFileUploadList", [data]);
+            }
+        });
+        return false;
+    });
 });
 </script>
 {{fieldId|kit_file_htmlCollection|raw}}

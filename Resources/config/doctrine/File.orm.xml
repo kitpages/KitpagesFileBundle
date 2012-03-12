@@ -6,6 +6,21 @@
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="Kitpages\FileBundle\Entity\File" table="kit_file">
+        <one-to-many
+            field="children"
+            target-entity="Kitpages\FileBundle\Entity\FileBase"
+            mapped-by="parent"
+        >
+            <cascade>
+                <cascade-persist />
+            </cascade>
+        </one-to-many>
+
+        <many-to-one field="parent" target-entity="Kitpages\FileBundle\Entity\FileBase" inversed-by="children" nullable="true" >
+            <join-columns>
+                <join-column name="parent_id" referenced-column-name="id" nullable="true" on-delete="SET NULL" on-update="CASCADE" />
+            </join-columns>
+        </many-to-one>
     </entity>
 
 </doctrine-mapping>
