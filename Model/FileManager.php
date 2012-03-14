@@ -145,20 +145,14 @@ class FileManager {
     // actions
     ////
 
-    public function fileDataJson($file, $entityFileName) {
+    public function fileDataJson($file, $entityFileName, $widthParent = false) {
         $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
-
-        $parentId = '';
-        if ($file->getParent() instanceof FileInterface) {
-            $parentId = $file->getParent()->getId();
-        }
 
         $data = array(
             'id' => $file->getId(),
             'fileName' => $file->getFilename(),
             'fileExtension' => $ext,
             'fileType' => $file->getType(),
-            'fileParent' => $parentId,
             'url' => $this->router->generate(
                 'kitpages_file_render',
                 array(
@@ -185,6 +179,13 @@ class FileManager {
                 }
             }
         }
+
+        if ($widthParent && $file->getParent() instanceof FileInterface) {
+            $data['fileParent'] = $this->fileDataJson($file->getParent(), $entityFileName);
+        } else {
+            $data['fileParent'] = null;
+        }
+
        return $data;
     }
 
@@ -232,8 +233,16 @@ class FileManager {
         $mimeType = finfo_file($finfo, $tempFileName);
         finfo_close($finfo);
 
+        // the parent file is always the original
         $file = $this->createFile($fileName, $entityFileName, $mimeType);
-        $file->setParent($fileParent);
+        if ($fileParent != null && $fileParent instanceof FileInterface  ) {
+            $fileParentParent = $fileParent->getParent();
+            if ($fileParentParent != null && $fileParentParent instanceof FileInterface) {
+                $file->setParent($fileParentParent);
+            } else {
+                $file->setParent($fileParent);
+            }
+        }
 
 
         $event->set('fileObject', $file);

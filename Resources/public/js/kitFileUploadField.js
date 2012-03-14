@@ -5,6 +5,7 @@
 
             this._settings = {
                 boundingBoxList: null,
+                event_replace: null,
                 event_add: null,
                 event_delete: null,
                 event_moveUp: null,
@@ -30,7 +31,7 @@
         WidgetField.prototype = {
             init: function() {
                 var self = this;
-                var eventList = ['add', 'delete', 'moveUp', 'moveDown', 'renumbering'];
+                var eventList = ['add', 'delete', 'moveUp', 'moveDown', 'renumbering', 'replace'];
                 // init custom events according to settings callback values
                 for (var i = 0 ; i < eventList.length ; i++ ) {
                     if (this._settings[eventList[i]]) {
@@ -58,6 +59,13 @@
                 }
                 var self = event.data.self;
                 self._add(fileInfo);
+            },
+            _replaceCallback: function(event, idTarget, idNew) {
+                if (event.isDefaultPrevented()) {
+                    return;
+                }
+                var self = event.data.self;
+                self._replace(idTarget, idNew);
             },
             _moveUpCallback: function(event, fileInfo) {
                 if (event.isDefaultPrevented()) {
@@ -106,9 +114,19 @@
                     self._boundingBox.attr('value', fileInfo.id);
                 }
             },
+            _replace: function(idTarget, idNew) {
+                var self = this;
+
+                if (self._settings.isMulti) {
+                    self._boundingBox.children("input[value="  + idTarget + "]").attr('value', idNew);
+                } else {
+                    self._boundingBox.attr('value', idNew);
+                }
+            },
             _delete: function(idCount) {
                 var self = this;
-                if (this._settings.isMulti) {
+
+                if (self._settings.isMulti) {
                     self._boundingBox.children("input[value="  + idCount + "]").remove();
                 } else {
                     self._boundingBox.attr('value', '');
@@ -116,8 +134,8 @@
                 self._boundingBox.trigger("renumbering_kitFileUploadField");
             },
             _renumbering: function() {
+                var self = this;
                 if (self._settings.isMulti == true) {
-                    var self = this;
                     self.deleteContent();
                     self._settings["boundingBoxList"].children('li').each(function(index){
                         var element = $(this);

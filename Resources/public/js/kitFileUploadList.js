@@ -5,15 +5,12 @@
 
             this._settings = {
                 isMulti: false,
-                urlDeletePng: null,
-                urlArrowUpPng: null,
-                urlArrowDownPng: null,
                 render: null,
                 moveUp: null,
                 moveDown: null,
                 add: null,
                 delete: null,
-                actionList: null,
+                replace: null,
                 fileList: new Array()
             };
             if (options) {
@@ -34,7 +31,7 @@
         WidgetList.prototype = {
             init: function() {
                 var self = this;
-                var eventList = ['render', 'moveUp', 'moveDown', 'add', 'delete', 'renumbering', 'populate', 'actionList'];
+                var eventList = ['render', 'moveUp', 'moveDown', 'add', 'delete', 'renumbering', 'populate', 'replace'];
                 // init custom events according to settings callback values
                 for (var i = 0 ; i < eventList.length ; i++ ) {
                     if (this._settings[eventList[i]]) {
@@ -46,41 +43,6 @@
                     var callbackName = "_"+eventList[i]+"Callback";
                     this._boundingBox.bind(eventList[i]+"_kitFileUploadList", {self:self}, this[callbackName]);
                 }
-
-                self._boundingBox.delegate(
-                    "a.kit-file-upload-list-delete",
-                    "click",
-                    function() {
-                        var button = $(this);
-                        self._boundingBox.trigger("delete_kitFileUploadList", [button]);
-                    }
-                );
-                self._boundingBox.delegate(
-                    "a.kit-file-upload-list-move-up",
-                    "click",
-                    function() {
-                        var button = $(this);
-                        self._boundingBox.trigger("moveUp_kitFileUploadList", [button]);
-                    }
-                );
-                self._boundingBox.delegate(
-                    "a.kit-file-upload-list-move-down",
-                    "click",
-                    function() {
-                        var button = $(this);
-                        self._boundingBox.trigger("moveDown_kitFileUploadList", [button]);
-                    }
-                );
-                self._boundingBox.delegate(
-                    ".kit-file-upload-action-list",
-                    "change",
-                    function() {
-                        var button = $(this);
-                        self._boundingBox.trigger("actionList_kitFileUploadList", [button]);
-                    }
-                );
-
-
             },
             ////
             // callbacks
@@ -108,6 +70,14 @@
                 var self = event.data.self;
                 self._add(fileInfo, index);
             },
+            _replaceCallback: function(event, fileInfo) {
+                if (event.isDefaultPrevented()) {
+                    return;
+                }
+
+                var self = event.data.self;
+                self._replace(fileInfo);
+            },
             _deleteCallback: function(event, buttonElement) {
                 if (event.isDefaultPrevented()) {
                     return;
@@ -132,13 +102,6 @@
                 var self = event.data.self;
                 self._moveDown(buttonElement);
             },
-            _actionListCallback: function(event, buttonElement) {
-                if (event.isDefaultPrevented()) {
-                    return;
-                }
-                var self = event.data.self;
-                self._actionList(buttonElement);
-            },
             ////
             // real methods that do something
             ////
@@ -161,91 +124,49 @@
                     index = self._boundingBox.children('li').length;
                 }
                 if (self._settings.isMulti == false) {
+                    self._settings['lineList'] = new Array();
                     self._boundingBox.html('');
-                } else {
-                    buttonMoveList = '<a class="kit-file-upload-list-move-up" >'+
-                        '<img src="' + self._settings.urlArrowUpPng + '" width="20" height="20" alt="[<]"/>'+
-                        '</a>' +
-                        '<a class="kit-file-upload-list-move-down" >'+
-                        '<img src="' + self._settings.urlArrowDownPng + '" width="20" height="20" alt="[>]"/>'+
-                        '</a>'
                 }
 
-                if (fileInfo.fileType == 'image') {
-                    iconHtml = '<img src="'+fileInfo.url+'"/>';
-                }
-                else {
-                    iconHtml = '<div class="kit-file-upload-list-document-icon"><div>'+fileInfo.fileExtension+'</div></div>';
-                }
+                self._boundingBox.append('<li data-kitfileuploadlist-id="' + fileInfo.id + '" ></li>');
 
-                var selectAction = '';
-                var countActionList = 0;
-                var actionList = fileInfo.actionList;
-                $.each(actionList, function(index, action) {
-                    if (countActionList == 0) {
-                        selectAction = '<div class="kit-file-upload-action"></div><select class="kit-file-upload-action-list">';
-                    }
-                    selectAction = selectAction + '<option value="' + action  + '">' + index + '</option>';
-                    countActionList++;
+                self._boundingBox.children('li[data-kitfileuploadlist-id="' + fileInfo.id + '"]').kitFileUploadLine({
+                    fileInfo:fileInfo,
+                    isButtonMove: self._settings.isMulti,
+                    after_moveUp:function(event, fileInfo) {self._moveUp(fileInfo)},
+                    after_moveDown:function(event, fileInfo) {self._moveDown(fileInfo)},
+                    after_delete:function(event, fileInfo) {self._delete(fileInfo)},
+                    after_addVersion:function(event, fileInfo) {self._replace(fileInfo.fileParent.id, fileInfo.id)},
+                    after_rollbackParent:function(event, fileInfo) {self._replace(fileInfo.id, fileInfo.fileParent.id)},
+                    urlDeletePng: self._settings.urlDeletePng,
+                    urlArrowUpPng: self._settings.urlArrowUpPng,
+                    urlArrowDownPng: self._settings.urlArrowDownPng
                 });
-                if (selectAction != '') {
-                    selectAction = selectAction + '</select>';
-                }
-                self._boundingBox.append(
-                    '<li data-kitfileuploadlist-id="' + fileInfo.id + '" >' +
-                        '<a class="kit-file-upload-list-delete" >'+
-                        '<img src="' + self._settings.urlDeletePng + '" width="20" height="20" alt="[X]"/>'+
-                        '</a>'
-                            + buttonMoveList
-                            + selectAction
-                            + iconHtml+' '
-                            + fileInfo.fileName
-                            + '<div  style="clear:both"></div>' +
-                    '</li>'
-                );
+
                 self._boundingBox.trigger("after_add_kitFileUploadList", [fileInfo, index]);
             },
-            _delete: function(buttonElement) {
+            _replace: function(fileParentId, fileId) {
                 var self = this;
-                var res = confirm("Are you sure you want delete this document ?");
-                if (res == false) {
-                    return;
-                }
-                var idCountDelete = buttonElement.parent().data('kitfileuploadlist-id');
-                buttonElement.parent().remove();
-                self._boundingBox.trigger("after_delete_kitFileUploadList", idCountDelete);
-                self._boundingBox.trigger("renumbering_kitFileUploadList");
+                self._boundingBox.children('li[data-kitfileuploadlist-id="' + fileParentId + '"]').attr('data-kitfileuploadlist-id', fileId);
+                self._boundingBox.trigger("after_replace_kitFileUploadList", [fileParentId, fileId]);
             },
-            _moveUp: function(buttonElement) {
+            _delete: function(fileInfo) {
                 var self = this;
-                var element = buttonElement.parent();
-                var idCountMove = buttonElement.parent().data('kitfileuploadlist-id');
+                self._boundingBox.trigger("after_delete_kitFileUploadList", fileInfo.id);
+            },
+            _moveUp: function(fileInfo) {
+                var self = this;
+                var element = self._boundingBox.children('li[data-kitfileuploadlist-id="' + fileInfo.id + '"]');
+                var idCountMove = element.data('kitfileuploadlist-id');
                 element.prev().before(element);
                 self._boundingBox.trigger("after_moveUp_kitFileUploadList", idCountMove);
             },
-            _moveDown: function(buttonElement) {
+            _moveDown: function(fileInfo) {
                 var self = this;
-                var element = buttonElement.parent();
-                var idCountMove = buttonElement.parent().data('kitfileuploadlist-id');
+                var element = self._boundingBox.children('li[data-kitfileuploadlist-id="' + fileInfo.id + '"]');
+                var idCountMove = element.data('kitfileuploadlist-id');
                 element.next().after(element);
                 self._boundingBox.trigger("after_moveDown_kitFileUploadList", idCountMove);
-            },
-            _actionList: function(buttonElement) {
-                var self = this;
-                var element = buttonElement.parent();
-                var fileId = element.data('kitfileuploadlist-id');
-                $.ajax({
-                    type: "POST",
-                    url: buttonElement.val(),
-                    dataType: 'html',
-                    data: "id="+fileId,
-                    success: function(dataHtml) {
-                        element.children('.kit-file-upload-action').html(dataHtml);
-                        self._boundingBox.trigger("after_actionList_kitFileUploadList", fileId);
-                    }
-                });
-
-                return;
             },
             ////
             // external methods

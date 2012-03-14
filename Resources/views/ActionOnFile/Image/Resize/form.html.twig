@@ -11,21 +11,6 @@ $(document).ready(function() {
 
     var ratio{{form.fileId.vars.value}} = $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[width]"]').val() / $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[height]"]').val();
 
-
-    {#$('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] .kit-file-actiononfile-form').submit(function() {#}
-        {#var form = $(this);#}
-        {#$.ajax({#}
-            {#type: 'POST',#}
-            {#url: form.attr('action'),#}
-            {#dataType: 'json',#}
-            {#data: form.serialize(),#}
-            {#success: function(data) {#}
-                {#uploadList.trigger("add_kitFileUploadList", [data]);#}
-            {#}#}
-        {#});#}
-        {#return false;#}
-    {#});#}
-
     $('li[data-kitfileuploadlist-id="{{form.fileId.vars.value}}"] input[name="KitFileFormResizeImage[ratio]"]').change(function() {
         var input = $(this);
         var ratio = input.attr('checked');

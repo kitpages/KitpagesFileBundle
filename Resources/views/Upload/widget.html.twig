@@ -20,7 +20,7 @@ $(document).ready(function() {
                     type: "POST",
                     url: "{{ path('kitpages_file_info', {'entityFileName' :entityFileName}) }}",
                     dataType: 'json',
-                    data: "id="+fileId,
+                    data: "id="+fileId+"&parent=true",
                     success: function(data) {
                         fileList[index] = data;
                         nbrLoadedFile++;
@@ -39,7 +39,7 @@ $(document).ready(function() {
                 type: "POST",
                 url: "{{ path('kitpages_file_info', {'entityFileName' :entityFileName}) }}",
                 dataType: 'json',
-                data: "id="+fileId,
+                data: "id="+fileId+"&parent=true",
                 success: function(data) {
                     fileList[0] = data;
                     uploadList.trigger("populate_kitFileUploadList", [fileList]);
@@ -48,19 +48,6 @@ $(document).ready(function() {
         }
     {% endif %}
 
-    $('.kit-file-upload-list').delegate('.kit-file-actiononfile-form', 'submit', function() {
-        var form = $(this);
-        $.ajax({
-            type: 'POST',
-            url: form.attr('action'),
-            dataType: 'json',
-            data: form.serialize(),
-            success: function(data) {
-                uploadList.trigger("addVersion_kitFileUploadList", [data]);
-            }
-        });
-        return false;
-    });
 });
 </script>
 {{fieldId|kit_file_htmlCollection|raw}}

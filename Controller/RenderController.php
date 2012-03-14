@@ -35,10 +35,11 @@ class RenderController extends Controller
         $fileManager = $this->get('kitpages.file.manager');
         $fileClass = $fileManager->getFileClass($entityFileName);
         $fileId = $this->getRequest()->request->get('id', null);
+        $widthParent = $this->getRequest()->request->get('parent', null);
         if (!is_null($fileId)) {
             $file = $em->getRepository($fileClass)->find($fileId);
             if ($file != null) {
-                $data = $fileManager->fileDataJson($file, $entityFileName);
+                $data = $fileManager->fileDataJson($file, $entityFileName, $widthParent);
 
                 return new Response( json_encode($data) );
             }

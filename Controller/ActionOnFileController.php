@@ -52,7 +52,7 @@ class ActionOnFileController extends Controller
         $fileVersion = $formHandler->process($form, $formFile, $entityFileName);
 
         if (!is_null($fileVersion)) {
-            $data = $fileManager->fileDataJson($fileVersion, $entityFileName);
+            $data = $fileManager->fileDataJson($fileVersion, $entityFileName, true);
             return new Response( json_encode($data) );
         }
         return new Response();

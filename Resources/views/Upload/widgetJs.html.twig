@@ -1,12 +1,15 @@
+
 var kitFileUploadList = uploadList.kitFileUploadList({
         isMulti: {% if multi %}true{% else %}false{% endif %},
         urlDeletePng: '{{ asset ("bundles/kitpagesfile/icon/delete.png") }}',
         urlArrowUpPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-up.png") }}',
-        urlArrowDownPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-down.png") }}'
+        urlArrowDownPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-down.png") }}',
+        urlParentPng: '{{ asset ("bundles/kitpagesfile/icon/parent.png") }}'
 });
 
 fieldList.kitFileUploadField({
     boundingBoxList: uploadList,
+    event_replace: 'after_replace_kitFileUploadList',
     event_add: 'after_add_kitFileUploadList',
     event_delete: 'after_delete_kitFileUploadList',
     event_moveUp: 'after_moveUp_kitFileUploadList',
