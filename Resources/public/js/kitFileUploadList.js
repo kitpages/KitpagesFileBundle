@@ -140,7 +140,8 @@
                     after_rollbackParent:function(event, fileInfo) {self._replace(fileInfo.id, fileInfo.fileParent.id)},
                     urlDeletePng: self._settings.urlDeletePng,
                     urlArrowUpPng: self._settings.urlArrowUpPng,
-                    urlArrowDownPng: self._settings.urlArrowDownPng
+                    urlArrowDownPng: self._settings.urlArrowDownPng,
+                    urlParentPng: self._settings.urlParentPng
                 });
 
                 self._boundingBox.trigger("after_add_kitFileUploadList", [fileInfo, index]);
