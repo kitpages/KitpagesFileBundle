@@ -71,6 +71,10 @@ class FileManager {
         return $this->typeList[$type];
     }
 
+    public function getEntityClassList() {
+        return $this->entityClassList;
+    }
+
     public function getActionOnFile($type, $action) {
         $typeInfo = $this->getType($type);
         return $typeInfo[$action];
@@ -367,12 +371,6 @@ class FileManager {
             if (is_file($this->getOriginalAbsoluteFileName($file))) {
                 copy($this->getOriginalAbsoluteFileName($file), $targetDir."/".$file->getFileName() ) ;
             }
-            // copy generated files
-            foreach (glob($this->getGenerationDir($file).'/*') as $fileName) {
-                if (is_file($fileName)) {
-                    copy($fileName, $targetDir."/".$file->getFileName());
-                }
-            }
         }
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFilePublish, $event);
     }
@@ -388,19 +386,6 @@ class FileManager {
         $originalDir = $this->getDataDirWithPrefix(null, $file).'/original/'.$dir;
         $fileName = $originalDir.'/'.$file->getId().'-'.$file->getFilename();
         return $fileName;
-    }
-
-
-    public function getGenerationDir(FileInterface $file)
-    {
-        $idString = (string) $file->getId();
-        if (strlen($idString)== 1) {
-            $idString = '0'.$idString;
-        }
-        $dir = substr($idString, 0, 2);
-        $generationDir = $this->getDataDirWithPrefix(null, $file).'/generated/'.$dir.'/'.$file->getId();
-        $this->getUtil()->mkdirr($generationDir);
-        return $generationDir;
     }
 
     public function getAbsoluteFilePublic(FileInterface $file)
