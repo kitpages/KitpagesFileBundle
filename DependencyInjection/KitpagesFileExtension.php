@@ -60,6 +60,7 @@ class KitpagesFileExtension extends Extension
 
         foreach($typeList as $type => $actionList) {
             foreach($actionList as $action => $actionInfo) {
+                $loader->load($type.'/'.$action.'.xml');
                 $container->setAlias('kitpages_file.'.$type.'.'.$action.'.library', new Alias('kitpages.file.'.$actionInfo['library']));
             }
         }

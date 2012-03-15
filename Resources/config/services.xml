@@ -41,16 +41,6 @@
         <service id="kitpages.file.twig.extension.catalog" class="Kitpages\FileBundle\Twig\Extension\FileExtension">
             <tag name="twig.extension" />
         </service>
-        <service id="kit_file.image.resize.form" class="Kitpages\FileBundle\Form\Image\ResizeForm">
-            <argument type="service" id="kitpages.file.manager"/>
-        </service>
-        <service id="kit_file.image.resize.form.handler" class="Kitpages\FileBundle\Form\Image\ResizeFormHandler">
-            <argument type="service" id="doctrine" />
-            <argument type="service" id="request" strict="false" />
-            <argument type="service" id="validator" />
-            <argument type="service" id="kitpages.file.manager"/>
-            <argument type="service" id="kitpages_file.image.resize.library" />
-        </service>
     </services>
 
 </container>

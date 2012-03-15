@@ -206,15 +206,17 @@
                 var selectAction = '';
                 var countActionList = 0;
                 var actionList = self._settings.fileInfo.actionList;
-                $.each(actionList, function(index, action) {
-                    if (countActionList == 0) {
-                        selectAction = '<div class="kit-file-upload-action"></div><select class="kit-file-upload-action-list">';
+                if (actionList != undefined) {
+                    $.each(actionList, function(index, action) {
+                        if (countActionList == 0) {
+                            selectAction = '<div class="kit-file-upload-action"></div><select class="kit-file-upload-action-list">';
+                        }
+                        selectAction = selectAction + '<option value="' + action  + '">' + index + '</option>';
+                        countActionList++;
+                    });
+                    if (selectAction != '') {
+                        selectAction = selectAction + '</select>';
                     }
-                    selectAction = selectAction + '<option value="' + action  + '">' + index + '</option>';
-                    countActionList++;
-                });
-                if (selectAction != '') {
-                    selectAction = selectAction + '</select>';
                 }
 
                 var buttonParent = '';
