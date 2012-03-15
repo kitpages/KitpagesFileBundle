@@ -1,8 +1,7 @@
-KitpagesFileBundle (work in progress)
+KitpagesFileBundle
 =====================================
 
 This is an ajax upload system for symfony.
-It is still in alpha state don't use it in production.
 
 author : Philippe Le Van (@plv)
 
@@ -18,28 +17,17 @@ add vendors/ in the app/autoload.php
 add the new Bundle in app/appKernel.php
 
 You need to create a table in the database :
-CREATE TABLE upload_file
-    (
-        id INT NOT NULL AUTO_INCREMENT,
-        is_private TINYINT(1) NOT NULL,
-        file_name VARCHAR(250) NOT NULL,
-        is_published TINYINT(1) NOT NULL,
-        item_class_name VARCHAR(250),
-        item_id INT,
-        published_at DATETIME,
-        unpublished_at DATETIME,
-        createdAt DATETIME NOT NULL,
-        updatedAt DATETIME NOT NULL,
-        hasUploadFailed TINYINT(1),
-        data longtext NOT NULL COMMENT '(DC2Type:array)',
-        PRIMARY KEY (id)
-    )
-    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+launch command:
+php app/console doctrine:schema:update
 
-(or you can use php app/console doctrine:schema:update)
+UPDATE DATABASE IF EXISTS
+===========
+updates an existing database in version1.2.0
 
+launch command:
+php app/console kitFile:updateDatabase
 
-Installation AvalancheImagineBundle
+Installation ImagineBundle
 ============
 Step 1
 bin/vendors.php
@@ -66,6 +54,4 @@ $loader->registerNamespaces(array(
 
 
 
-Users Guide
-===========
 
