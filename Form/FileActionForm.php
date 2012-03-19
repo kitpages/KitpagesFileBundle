@@ -13,11 +13,17 @@ class FileActionForm extends AbstractType
     {
         $this->fileManager = $fileManager;
         $this->file = null;
+        $this->publishParent = false;
     }
 
     public function setFile(FileInterface $file) {
         $this->file = $file;
     }
+
+    public function setPublishParent($publishParent) {
+        $this->publishParent = $publishParent;
+    }
+
 
     public function buildForm(FormBuilder $builder, array $options)
     {
@@ -25,12 +31,18 @@ class FileActionForm extends AbstractType
         if ($this->file != null) {
             $fileIdFieldParameter['data'] = $this->file->getId();
         }
+        $publishParentFieldParameter['data'] = $this->publishParent;
+
         $builder->add(
             'fileId',
             'hidden',
             $fileIdFieldParameter
         );
-
+        $builder->add(
+            'publishParent',
+            'hidden',
+            $publishParentFieldParameter
+        );
     }
 
     public function getName() {

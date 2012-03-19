@@ -23,7 +23,9 @@
 
         <field name="mimeType" column="mime_type" type="string" length="250" nullable="true" />
 
-        <field name="renderHtml" column="render_html" type="string" length="250" nullable="true" />
+        <field name="html" column="html" type="string" length="1000" nullable="true" />
+
+        <field name="publishParent" column="publish_parent" type="boolean" nullable="true" />
 
         <field name="createdAt" type="datetime" nullable="true" >
             <gedmo:timestampable on="create"/>

@@ -43,6 +43,7 @@ class ResizeFormHandler
                 $dataForm = $this->request->request->get($formFile->getName());
                 $fileClass = $this->fileManager->getFileClass($entityFileName);
                 $fileId = $dataForm['fileId'];
+                $publishParent = $dataForm['publishParent'];
                 if (!is_null($fileId)) {
                     $em = $this->doctrine->getEntityManager();
                     $file = $em->getRepository($fileClass)->find($fileId);
@@ -59,7 +60,13 @@ class ResizeFormHandler
                         ->save($tmpFileName)
                         ->apply($image);
 
-                    $fileVersion = $this->fileManager->createFormLocale($tmpFileName, $file->getFileName(), $entityFileName, $file);
+                    $fileVersion = $this->fileManager->createFormLocale(
+                        $tmpFileName,
+                        $file->getFileName(),
+                        $entityFileName,
+                        $file,
+                        $publishParent
+                    );
                     return $fileVersion;
                 }
 

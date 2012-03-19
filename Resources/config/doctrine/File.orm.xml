@@ -16,7 +16,7 @@
             </cascade>
         </one-to-many>
 
-        <many-to-one field="parent" target-entity="Kitpages\FileBundle\Entity\FileBase" inversed-by="children" nullable="true" >
+        <many-to-one field="parent" target-entity="Kitpages\FileBundle\Entity\File" inversed-by="children" nullable="true" >
             <join-columns>
                 <join-column name="parent_id" referenced-column-name="id" nullable="true" on-delete="SET NULL" on-update="CASCADE" />
             </join-columns>

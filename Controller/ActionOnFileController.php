@@ -16,6 +16,7 @@ class ActionOnFileController extends Controller
 
     public function widgetAction($entityFileName, $typeFile, $actionFile) {
         $fileId = $this->getRequest()->request->get("id", null);
+        $publishParent = $this->getRequest()->request->get("publishParent", null);
         $fileManager = $this->get('kitpages.file.manager');
 
         $fileClass = $fileManager->getFileClass($entityFileName);
@@ -28,6 +29,7 @@ class ActionOnFileController extends Controller
         $formFile = $this->container->get($action['form']);
 
         $formFile->setFile($file);
+        $formFile->setPublishParent($publishParent);
         $form   = $this->createForm($formFile);
 
         return $this->render(

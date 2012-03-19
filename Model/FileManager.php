@@ -28,6 +28,8 @@ class FileManager {
     protected $publicPrefix = null;
     protected $baseUrl = null;
     protected $webRootDir = null;
+    protected $entityFileList = array();
+    protected $typeList = array();
 
     public function __construct(
         Registry $doctrine,
@@ -68,7 +70,11 @@ class FileManager {
     }
 
     public function getType($type) {
-        return $this->typeList[$type];
+        if (count($this->typeList) > 0 && isset($this->typeList[$type])) {
+            return $this->typeList[$type];
+        } else {
+           return null;
+        }
     }
 
     public function getEntityClassList() {
@@ -157,6 +163,7 @@ class FileManager {
             'fileName' => $file->getFilename(),
             'fileExtension' => $ext,
             'fileType' => $file->getType(),
+            'isPrivate' => $file->getIsPrivate(),
             'url' => $this->router->generate(
                 'kitpages_file_render',
                 array(
@@ -165,10 +172,10 @@ class FileManager {
                 )
             )
         );
-
-        if (count($this->typeList[$file->getType()]) > 0) {
+        $type = $this->getType($file->getType());
+        if (count($type) > 0) {
             $data['actionList']['Action'] = $this->router->generate('kitpages_file_actionOnFile_widgetEmpty');
-            foreach($this->typeList[$file->getType()] as $action=>$actionInfo) {
+            foreach($type as $action=>$actionInfo) {
                 if ($actionInfo['url'] != null) {
                     $data['actionList'][$action] = $this->router->generate($actionInfo['url']);
                 } else {
@@ -186,8 +193,10 @@ class FileManager {
 
         if ($widthParent && $file->getParent() instanceof FileInterface) {
             $data['fileParent'] = $this->fileDataJson($file->getParent(), $entityFileName);
+            $data['publishParent'] = $file->getPublishParent();
         } else {
             $data['fileParent'] = null;
+            $data['publishParent'] = null;
         }
 
        return $data;
@@ -196,11 +205,11 @@ class FileManager {
     public function renderHtml($type, $fileName) {
         $html = '';
         if($type == 'image'){
-            $html = '<img src="[[file:url]]">';
+            $html = '<img class="[[file:class]]" src="[[file:url]]" />';
         } elseif ($type == 'video') {
 
         } elseif ($type == 'application') {
-            $html = '<a href="[[file:url]]">'.$fileName.'</a>';
+            $html = '<a class="[[file:class]]" href="[[file:url]]">'.$fileName.'</a>';
         }
 
         return $html;
@@ -220,13 +229,12 @@ class FileManager {
         $file->setType($typeList[0]);
         $file->setMimeType($mimeType);
 
-//        $file->setRenderHtml($this->renderHtml($typeList[0], $fileName));
-        //$file->setRenderHtml('test');
+        $file->setHtml($this->renderHtml($typeList[0], $fileName));
 
         return $file;
     }
 
-    public function createFormLocale($tempFileName, $fileName, $entityFileName, $fileParent = null) {
+    public function createFormLocale($tempFileName, $fileName, $entityFileName, $fileParent = null, $publishParent = false) {
         // send on event
         $event = new FileEvent();
         $event->set('tempFileName', $tempFileName);
@@ -243,8 +251,10 @@ class FileManager {
             $fileParentParent = $fileParent->getParent();
             if ($fileParentParent != null && $fileParentParent instanceof FileInterface) {
                 $file->setParent($fileParentParent);
+                $file->setPublishParent($publishParent);
             } else {
                 $file->setParent($fileParent);
+                $fileParent->setPublishParent($publishParent);
             }
         }
 
@@ -360,7 +370,7 @@ class FileManager {
         $event = new FileEvent();
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFilePublish, $event);
-        if (!$event->isDefaultPrevented()) {
+        if (!$event->isDefaultPrevented() && !$file->getIsPrivate()) {
             $targetDir = $this->getAbsoluteFilePublic($file);
             if (is_dir($targetDir)) {
                 $this->getUtil()->rmdirr($targetDir);
@@ -371,6 +381,13 @@ class FileManager {
             if (is_file($this->getOriginalAbsoluteFileName($file))) {
                 copy($this->getOriginalAbsoluteFileName($file), $targetDir."/".$file->getFileName() ) ;
             }
+            if ($file->getPublishParent()) {
+                $fileParent = $file->getParent();
+                if ($fileParent instanceof FileInterface) {
+                    $this->publish($fileParent);
+                }
+            }
+
         }
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFilePublish, $event);
     }

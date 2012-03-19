@@ -113,4 +113,45 @@ interface FileInterface {
      */
     public function getStatus();
 
+    /**
+     * Set type
+     *
+     * @param string $type
+     */
+    public function setType($type);
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType();
+
+    /**
+     * Set mimeType
+     *
+     * @param string $mimeType
+     */
+    public function setMimeType($mimeType);
+
+    /**
+     * Get mimeType
+     *
+     * @return string
+     */
+    public function getMimeType();
+
+    /**
+     * Set html
+     *
+     * @param string $html
+     */
+    public function setHtml($html);
+
+    /**
+     * Get html
+     *
+     * @return string
+     */
+    public function getHtml();
 }

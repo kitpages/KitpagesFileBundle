@@ -245,30 +245,55 @@ class FileBase implements FileInterface {
     {
         return $this->mimeType;
     }
+
     /**
-     * @var string $renderHtml
+     * @var string $html
      */
-    private $renderHtml;
+    private $html;
 
 
     /**
-     * Set renderHtml
+     * Set html
      *
-     * @param string $renderHtml
+     * @param string $html
      */
-    public function setRenderHtml($renderHtml)
+    public function setHtml($html)
     {
-        $this->renderHtml = $renderHtml;
+        $this->html = $html;
     }
 
     /**
-     * Get renderHtml
+     * Get html
      *
      * @return string 
      */
-    public function getRenderHtml()
+    public function getHtml()
     {
-        return $this->renderHtml;
+        return $this->html;
+    }
+    /**
+     * @var boolean $publishParent
+     */
+    private $publishParent;
+
+
+    /**
+     * Set publishParent
+     *
+     * @param boolean $publishParent
+     */
+    public function setPublishParent($publishParent)
+    {
+        $this->publishParent = $publishParent;
     }
 
+    /**
+     * Get publishParent
+     *
+     * @return boolean 
+     */
+    public function getPublishParent()
+    {
+        return $this->publishParent;
+    }
 }

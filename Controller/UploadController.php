@@ -51,7 +51,7 @@ class UploadController extends Controller
         return new Response( '0' );
     }
 
-    public function widgetAction($fieldId, $multi=false, $entityFileName = 'default', $parameterList = array())
+    public function widgetAction($fieldId, $multi=false, $entityFileName = 'default', $publishParent=false, $parameterList = array())
     {
         $parameterList = array_merge($this->defaultParameterList, $parameterList);
 
@@ -60,6 +60,7 @@ class UploadController extends Controller
             array(
                 "fieldId" => $fieldId,
                 "multi" => $multi,
+                'publishParent' => $publishParent,
                 "entityFileName" => $entityFileName,
                 "parameterList" => $parameterList,
                 "kitpages_file_session_id" => session_id()
