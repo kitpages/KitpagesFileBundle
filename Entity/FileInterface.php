@@ -6,6 +6,7 @@ namespace Kitpages\FileBundle\Entity;
 interface FileInterface {
     const STATUS_TEMP = 'temp';
     const STATUS_VALID = 'valid';
+    const STATUS_PENDING_DELETE = 'pending_delete';
 
     /**
      * Set isPrivate
@@ -154,4 +155,43 @@ interface FileInterface {
      * @return string
      */
     public function getHtml();
+
+    /**
+     * Set itemCategory
+     *
+     * @param string $itemCategory
+     */
+    public function setItemCategory($itemCategory);
+    /**
+     * Get itemCategory
+     *
+     * @return string
+     */
+    public function getItemCategory();
+    /**
+     * Set itemClass
+     *
+     * @param string $itemClass
+     */
+    public function setItemClass($itemClass);
+
+    /**
+     * Get itemClass
+     *
+     * @return string
+     */
+    public function getItemClass();
+    /**
+     * Set itemId
+     *
+     * @param string $itemId
+     */
+    public function setItemId($itemId);
+
+    /**
+     * Get itemId
+     *
+     * @return string
+     */
+    public function getItemId();
 }

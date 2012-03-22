@@ -296,4 +296,80 @@ class FileBase implements FileInterface {
     {
         return $this->publishParent;
     }
+
+    /**
+     * @var string $itemCategory
+     */
+    private $itemCategory;
+
+    /**
+     * @var string $itemClass
+     */
+    private $itemClass;
+
+    /**
+     * @var string $itemId
+     */
+    private $itemId;
+
+
+    /**
+     * Set itemCategory
+     *
+     * @param string $itemCategory
+     */
+    public function setItemCategory($itemCategory)
+    {
+        $this->itemCategory = $itemCategory;
+    }
+
+    /**
+     * Get itemCategory
+     *
+     * @return string 
+     */
+    public function getItemCategory()
+    {
+        return $this->itemCategory;
+    }
+
+    /**
+     * Set itemClass
+     *
+     * @param string $itemClass
+     */
+    public function setItemClass($itemClass)
+    {
+        $this->itemClass = $itemClass;
+    }
+
+    /**
+     * Get itemClass
+     *
+     * @return string 
+     */
+    public function getItemClass()
+    {
+        return $this->itemClass;
+    }
+
+    /**
+     * Set itemId
+     *
+     * @param string $itemId
+     */
+    public function setItemId($itemId)
+    {
+        $this->itemId = $itemId;
+    }
+
+    /**
+     * Get itemId
+     *
+     * @return string 
+     */
+    public function getItemId()
+    {
+        return $this->itemId;
+    }
 }

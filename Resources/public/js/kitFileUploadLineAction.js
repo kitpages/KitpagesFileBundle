@@ -5,6 +5,7 @@
 
             this._settings = {
                 fileId: null,
+                publishParent: false,
                 render: null,
                 action: null,
                 after_action: null
@@ -83,7 +84,7 @@
                     type: "POST",
                     url: self._settings.url,
                     dataType: 'html',
-                    data: "id="+self._settings.fileId,
+                    data: "id="+self._settings.fileId+"&publishParent="+self._settings.publishParent,
                     success: function(dataHtml) {
                         self._boundingBox.html(dataHtml);
                     }
@@ -91,7 +92,6 @@
             },
             _action: function(form) {
                 var self = this;
-   //             alert(form.toSource());
                 $.ajax({
                     type: 'POST',
                     url: form.attr('action'),

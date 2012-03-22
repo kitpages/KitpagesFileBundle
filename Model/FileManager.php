@@ -64,6 +64,9 @@ class FileManager {
         $this->webRootDir = realpath($kernelRootDir.'/../web');
     }
 
+    public function getFilePublicAbsoluteRootDir() {
+        return $this->webRootDir.'/'.$this->publicPrefix;
+    }
 
     public function getTypeList() {
         return $this->typeList;
@@ -205,21 +208,29 @@ class FileManager {
     public function renderHtml($type, $fileName) {
         $html = '';
         if($type == 'image'){
-            $html = '<img class="[[file:class]]" src="[[file:url]]" />';
+            $html = '<img class="[[file:parameter:class]]" src="[[file:url]]" />';
         } elseif ($type == 'video') {
 
         } elseif ($type == 'application') {
-            $html = '<a class="[[file:class]]" href="[[file:url]]">'.$fileName.'</a>';
+            $html = '<a class="[[file:parameter:class]]" href="[[file:url]]">'.$fileName.'</a>';
         }
 
         return $html;
     }
 
-    public function createFile($fileName, $entityFileName, $mimeType) {
+    public function createFile(
+        $fileName,
+        $entityFileName,
+        $mimeType,
+        $itemClass,
+        $itemId
+    ) {
         $fileClass = $this->getFileClass($entityFileName);
 
 
         $file = new $fileClass();
+        $file->setItemClass($itemClass);
+        $file->setItemId($itemId);
         $file->setStatus(FileInterface::STATUS_TEMP);
         $file->setFileName($fileName);
         $file->setIsPrivate(false);
@@ -234,7 +245,15 @@ class FileManager {
         return $file;
     }
 
-    public function createFormLocale($tempFileName, $fileName, $entityFileName, $fileParent = null, $publishParent = false) {
+    public function createFormLocale(
+        $tempFileName,
+        $fileName,
+        $entityFileName,
+        $itemClass = null,
+        $itemId = null,
+        $fileParent = null,
+        $publishParent = false
+    ) {
         // send on event
         $event = new FileEvent();
         $event->set('tempFileName', $tempFileName);
@@ -246,7 +265,7 @@ class FileManager {
         finfo_close($finfo);
 
         // the parent file is always the original
-        $file = $this->createFile($fileName, $entityFileName, $mimeType);
+        $file = $this->createFile($fileName, $entityFileName, $mimeType, $itemClass, $itemId);
         if ($fileParent != null && $fileParent instanceof FileInterface  ) {
             $fileParentParent = $fileParent->getParent();
             if ($fileParentParent != null && $fileParentParent instanceof FileInterface) {
@@ -289,7 +308,7 @@ class FileManager {
     }
 
 
-    public function upload($tempFileName, $fileName, $entityFileName) {
+    public function upload($tempFileName, $fileName, $entityFileName, $itemClass = null, $itemId = null) {
         // send on event
         $event = new FileEvent();
         $event->set('tempFileName', $tempFileName);
@@ -300,7 +319,7 @@ class FileManager {
         $mimeType = finfo_file($finfo, $tempFileName);
         finfo_close($finfo);
 
-        $file = $this->createFile($fileName, $entityFileName, $mimeType);
+        $file = $this->createFile($fileName, $entityFileName, $mimeType, $itemClass, $itemId);
 
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileUpload, $event);
@@ -339,16 +358,28 @@ class FileManager {
         if (!$event->isDefaultPrevented()) {
             // remove original file
             $targetFileName = $this->getOriginalAbsoluteFileName($file);
-            $originalDir = dirname($targetFileName);
-
-            if (is_dir($originalDir)) {
-                $this->getUtil()->rmdirr($originalDir);
+            if (is_file($targetFileName)) {
+                unlink($targetFileName);
             }
             $em = $this->getDoctrine()->getEntityManager();
             $em->remove($file);
             $em->flush();
         }
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFileDelete, $event);
+    }
+
+    public function deleteTemp($itemCategory, $itemId, $entityFileName = 'default')
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        $fileClass = $this->getFileClass($entityFileName);
+        $fileList = $em->getRepository($fileClass)->findByStatusAndItem(
+            FileInterface::STATUS_TEMP,
+            $itemCategory,
+            $itemId
+        );
+        foreach($fileList as $file) {
+            $this->delete($file);
+        }
     }
 
     public function unpublish($dir)
@@ -371,16 +402,18 @@ class FileManager {
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFilePublish, $event);
         if (!$event->isDefaultPrevented() && !$file->getIsPrivate()) {
-            $targetDir = $this->getAbsoluteFilePublic($file);
-            if (is_dir($targetDir)) {
-                $this->getUtil()->rmdirr($targetDir);
-            }
-            $this->getUtil()->mkdirr($targetDir);
+            $targetDir = $this->getFilePublicAbsoluteDir($file);
 
-            // copy original file
-            if (is_file($this->getOriginalAbsoluteFileName($file))) {
-                copy($this->getOriginalAbsoluteFileName($file), $targetDir."/".$file->getFileName() ) ;
+            if (!is_file($targetDir."/".$file->getFileName())) {
+                if (is_dir($targetDir)) {
+                    $this->getUtil()->rmdirr($targetDir);
+                }
+                $this->getUtil()->mkdirr($targetDir);
+                if (is_file($this->getOriginalAbsoluteFileName($file))) {
+                    copy($this->getOriginalAbsoluteFileName($file), $targetDir."/".$file->getFileName() ) ;
+                }
             }
+
             if ($file->getPublishParent()) {
                 $fileParent = $file->getParent();
                 if ($fileParent instanceof FileInterface) {
@@ -405,7 +438,12 @@ class FileManager {
         return $fileName;
     }
 
-    public function getAbsoluteFilePublic(FileInterface $file)
+    public function getFilePublicAbsolute(FileInterface $file)
+    {
+        return $this->getFilePublicAbsoluteDir($file)."/".$file->getFileName();
+    }
+
+    public function getFilePublicAbsoluteDir(FileInterface $file)
     {
         $idString = (string) $file->getId();
         if (strlen($idString)== 1) {
@@ -438,5 +476,3 @@ class FileManager {
     }
 
 }
-
-?>

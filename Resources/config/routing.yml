@@ -3,7 +3,7 @@ file_upload_check:
     defaults: { _controller: KitpagesFileBundle:Upload:check }
 
 file_upload_do_upload:
-    pattern:  /do-upload/{entityFileName}
+    pattern:  /do-upload/{entityFileName}/{itemClass}/{itemId}
     defaults: { _controller: KitpagesFileBundle:Upload:doUpload }
 
 kitpages_file_render:

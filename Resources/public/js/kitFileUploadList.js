@@ -5,6 +5,7 @@
 
             this._settings = {
                 isMulti: false,
+                publishParent: false,
                 render: null,
                 moveUp: null,
                 moveDown: null,
@@ -133,6 +134,7 @@
                 self._boundingBox.children('li[data-kitfileuploadlist-id="' + fileInfo.id + '"]').kitFileUploadLine({
                     fileInfo:fileInfo,
                     isButtonMove: self._settings.isMulti,
+                    publishParent: self._settings.publishParent,
                     after_moveUp:function(event, fileInfo) {self._moveUp(fileInfo)},
                     after_moveDown:function(event, fileInfo) {self._moveDown(fileInfo)},
                     after_delete:function(event, fileInfo) {self._delete(fileInfo)},
@@ -141,7 +143,8 @@
                     urlDeletePng: self._settings.urlDeletePng,
                     urlArrowUpPng: self._settings.urlArrowUpPng,
                     urlArrowDownPng: self._settings.urlArrowDownPng,
-                    urlParentPng: self._settings.urlParentPng
+                    urlParentPng: self._settings.urlParentPng,
+                    urlPublishPng: self._settings.urlPublishPng
                 });
 
                 self._boundingBox.trigger("after_add_kitFileUploadList", [fileInfo, index]);

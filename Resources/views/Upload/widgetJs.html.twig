@@ -1,7 +1,7 @@
 
 var kitFileUploadList = uploadList.kitFileUploadList({
-        isMulti: {% if multi %}true{% else %}false{% endif %},
-        publishParent: {% if publishParent %}true{% else %}false{% endif %},
+        isMulti: {% if parameterList.multi %}true{% else %}false{% endif %},
+        publishParent: {% if parameterList.publishParent %}true{% else %}false{% endif %},
         urlDeletePng: '{{ asset ("bundles/kitpagesfile/icon/delete.png") }}',
         urlArrowUpPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-up.png") }}',
         urlArrowDownPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-down.png") }}',
@@ -16,18 +16,18 @@ fieldList.kitFileUploadField({
     event_delete: 'after_delete_kitFileUploadList',
     event_moveUp: 'after_moveUp_kitFileUploadList',
     event_moveDown: 'after_moveDown_kitFileUploadList',
-    isMulti: {% if multi %}true{% else %}false{% endif %}
+    isMulti: {% if parameterList.multi %}true{% else %}false{% endif %}
 })
 
 fieldUpoadify.uploadify({
     'uploader'  : '{{ asset ("bundles/kitpagesfile/uploadify/uploadify.swf") }}',
-    'script'    : '{{ path('file_upload_do_upload', {'entityFileName' :entityFileName}) }}',
+    'script'    : '{{ path('file_upload_do_upload', {'entityFileName' :entityFileName, 'itemClass' :itemClass, 'itemId': itemId}) }}',
     'checkScript' : '{{ path('file_upload_check') }}',
     'cancelImg' : '{{ asset ("bundles/kitpagesfile/uploadify/cancel.png") }}',
     'folder'    : '/glouglou',
     'buttonText': '{{parameterList.buttonText}}',
     'scriptData' : {'kitpages_file_session_id': '{{ kitpages_file_session_id }}'},
-    'multi' : {% if multi %}true{% else %}false{% endif %},
+    'multi' : {% if parameterList.multi %}true{% else %}false{% endif %},
     'auto'      : true,
     'onComplete' : function(event, ID, fileObj, response, data) {
         var tab = $.parseJSON(response);

@@ -12,7 +12,9 @@ class UploadController extends Controller
 {
 
     public $defaultParameterList = array(
-        'buttonText' => 'Upload a File'
+        'buttonText' => 'Upload a File',
+        'multi' => false,
+        'publishParent' => false
     );
 
     public function checkAction()
@@ -39,10 +41,16 @@ class UploadController extends Controller
     {
         return $this->get('kitpages.file.manager');
     }
-    public function doUploadAction($entityFileName)
+    public function doUploadAction($entityFileName, $itemClass, $itemId)
     {
         $fileManager = $this->getFileManager();
-        $file = $fileManager->upload($_FILES['Filedata']['tmp_name'], $_FILES['Filedata']['name'], $entityFileName);
+        $file = $fileManager->upload(
+            $_FILES['Filedata']['tmp_name'],
+            $_FILES['Filedata']['name'],
+            $entityFileName,
+            $itemClass,
+            $itemId
+        );
         if ( $file instanceof FileInterface) {
             $data = $fileManager->fileDataJson($file, $entityFileName);
 
@@ -51,7 +59,13 @@ class UploadController extends Controller
         return new Response( '0' );
     }
 
-    public function widgetAction($fieldId, $multi=false, $entityFileName = 'default', $publishParent=false, $parameterList = array())
+    public function widgetAction(
+        $fieldId,
+        $entityFileName = 'default',
+        $itemClass = null,
+        $itemId = null,
+        $parameterList = array()
+    )
     {
         $parameterList = array_merge($this->defaultParameterList, $parameterList);
 
@@ -59,23 +73,22 @@ class UploadController extends Controller
             'KitpagesFileBundle:Upload:widget.html.twig',
             array(
                 "fieldId" => $fieldId,
-                "multi" => $multi,
-                'publishParent' => $publishParent,
                 "entityFileName" => $entityFileName,
+                "itemClass" => $itemClass,
+                "itemId" => $itemId,
                 "parameterList" => $parameterList,
                 "kitpages_file_session_id" => session_id()
             )
         );
     }
 
-    public function collectionWidgetAction($entityFileName = 'default', $multi=false, $parameterList = array())
+    public function collectionWidgetAction($entityFileName = 'default', $parameterList = array())
     {
         $parameterList = array_merge($this->defaultParameterList, $parameterList);
 
         return $this->render(
             'KitpagesFileBundle:Upload:widgetJs.html.twig',
             array(
-                "multi" => $multi,
                 "entityFileName" => $entityFileName,
                 "parameterList" => $parameterList,
                 "kitpages_file_session_id" => session_id()

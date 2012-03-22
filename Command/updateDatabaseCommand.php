@@ -27,6 +27,13 @@ EOT
         $fileManager = $this->getContainer()->get('kitpages.file.manager');
         $entityClassList = $fileManager->getEntityClassList();
 
+        $dialog = $this->getHelperSet()->get('dialog');
+        $category = $dialog->ask(
+            $output,
+            '<info>Enter a item_class to your existing files?</info> [<comment></comment>]:',
+            ''
+        );
+
         foreach($entityClassList as $entityClass) {
             $fileList = $em->getRepository($entityClass)->findAll();
             foreach($fileList as $file) {
@@ -39,6 +46,7 @@ EOT
                         $mimeType = finfo_file($finfo, $filePath);
                         finfo_close($finfo);
                         $typeList = explode('/', $mimeType);
+                        $file->setCategory($category);
                         $file->setType($typeList[0]);
                         $file->setMimeType($mimeType);
                         $em->persist($file);

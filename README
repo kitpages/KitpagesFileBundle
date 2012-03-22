@@ -52,6 +52,31 @@ $loader->registerNamespaces(array(
 ));
 
 
+display the html file in a twig
+============
+{% render 'KitpagesFileBundle:Render:htmlWidget' with {'fileInfo':data.media.mainImage.0.default, 'parameterList':{'class':cssClassFile } %}
+
+Extend entity
+============
+see entity File
+create a entity
+    - class Extendentity extends FileBase
+create a repository
+ - class ExtendentityRepository extends FileBaseRepository
+   {
+       CONST entity = 'AppSiteBundle:Extendentity';
+   }
+
+complete config.yml
+    entity_file_name_list:
+        default :
+            class: Kitpages\FileBundle\Entity\File
+            data_dir_prefix: /default
+        Extendentity :
+            class: App\SiteBundle\Entity\Extendentity
+            data_dir_prefix: /ExtendentityDir
+
+
 
 
 

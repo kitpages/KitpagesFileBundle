@@ -6,10 +6,12 @@
             this._settings = {
                 fileInfo: null,
                 isButtonMove: false,
+                publishParent: false,
                 urlDeletePng: null,
                 urlArrowUpPng: null,
                 urlArrowDownPng: null,
                 urlParentPng: null,
+                urlPublishPng: null,
                 render: null,
                 moveUp: null,
                 moveDown: null,
@@ -48,11 +50,13 @@
                     'actionList',
                     'addVersion',
                     'rollbackParent',
+                    'allowPublishParent',
                     'after_delete',
                     'after_moveUp',
                     'after_moveDown',
                     'after_addVersion',
-                    'after_rollbackParent'
+                    'after_rollbackParent',
+                    'after_allowPublishParent'
                 ];
                 // init custom events according to settings callback values
                 for (var i = 0 ; i < eventList.length ; i++ ) {
@@ -106,6 +110,14 @@
                         self._boundingBox.trigger("rollbackParent_kitFileUploadLine");
                     }
                 );
+                self._boundingBox.delegate(
+                    ".kit-file-upload-line-parent-publish",
+                    "click",
+                    function() {
+                        var button = $(this);
+                        self._boundingBox.trigger("allowPublishParent_kitFileUploadLine");
+                    }
+                );
                 self._boundingBox.html(self._render());
             },
             ////
@@ -125,6 +137,14 @@
 
                 var self = event.data.self;
                 self._rollbackParent();
+            },
+            _allowPublishParentCallback: function(event) {
+                if (event.isDefaultPrevented()) {
+                    return;
+                }
+
+                var self = event.data.self;
+                self._allowPublishParent();
             },
             _addVersionCallback: function(event, fileInfo) {
                 if (event.isDefaultPrevented()) {
@@ -171,6 +191,9 @@
                 return;
             },
             _after_rollbackParentCallback: function(event) {
+                return;
+            },
+            _after_allowPublishParentCallback: function(event) {
                 return;
             },
             _actionListCallback: function(event, buttonElement) {
@@ -220,16 +243,28 @@
                 }
 
                 var buttonParent = '';
+                var parentIsPrivate = '';
                 if (self._settings.fileInfo.fileParent != null) {
                     buttonParent = '<a class="kit-file-upload-line-parent" >'+
-                        '<img src="' + self._settings.urlParentPng + '" width="20" height="20" alt="[O]"/>'+
+                        '<img src="' + self._settings.urlParentPng + '" width="20" height="20" alt="[O]" title="rollback this document" />'+
                         '</a>';
+//                    var parentPublishClass = '';
+//                    var parentPublishText = '';
+//                    if (!self._settings.fileInfo.publishParent) {
+//                        parentPublishClass = "kit-file-upload-line-parent-publish-no";
+//                        parentPublishText = "allow publish the original document";
+//                    } else {
+//                        parentPublishText = "forbid publish the original document";
+//                    }
+//                    parentIsPrivate = '<a class="kit-file-upload-line-parent-publish ' + parentPublishClass + '"  title="' + parentPublishText + '" >' +
+//                        '<img src="' + self._settings.urlPublishPng + '" width="20" height="20" alt="[O]" /><img src="' + self._settings.urlParentPng + '" width="20" height="20" alt="[O]" /></a>';
                 }
 
                 var render =
                         '<a class="kit-file-upload-line-delete" >'+
-                        '<img src="' + self._settings.urlDeletePng + '" width="20" height="20" alt="[X]"/>'+
+                        '<img src="' + self._settings.urlDeletePng + '" width="20" height="20" alt="[X]"  title="delete this document" />'+
                         '</a>'
+                            + parentIsPrivate
                             + buttonParent
                             + buttonMoveList
                             + selectAction
@@ -238,6 +273,27 @@
                             + '<div  style="clear:both"></div>';
                 return render;
 
+            },
+            _allowPublishParent: function() {
+                var self = this;
+                var fileInfo = self._settings.fileInfo;
+                var parentIsPrivate = self._settings.fileInfo.fileParent.isPrivate;
+
+                if (parentIsPrivate == 'true') {
+                    var res = confirm("Are you sure you want the original document is published ?");
+                    if (res == false) {
+                        return;
+                    }
+                    self._boundingBox.children('.kit-file-upload-line-parent-publish').removeClass('kit-file-upload-line-parent-publish-no');
+                } else {
+                    var res = confirm("Are you sure you want the original document is not published ?");
+                    if (res == false) {
+                        return;
+                    }
+                    self._boundingBox.children('.kit-file-upload-line-parent-publish').addClass('kit-file-upload-line-parent-publish-no');
+                }
+
+                self._boundingBox.trigger("after_allowPublishParent_kitFileUploadLine", fileInfo);
             },
             _rollbackParent: function() {
                 var self = this;
@@ -281,6 +337,7 @@
                 self._boundingBox.children('.kit-file-upload-action').kitFileUploadLineAction({
                     url: buttonElement.val(),
                     fileId: fileId,
+                    publishParent: self._settings.publishParent,
                     after_action: function(event, fileInfo) {self._addVersion(fileInfo)}
                 });
 

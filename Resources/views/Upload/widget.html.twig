@@ -11,7 +11,7 @@ $(document).ready(function() {
 
     var fileList = new Array();
     var nbrLoadedFile = 0;
-    {% if multi %}
+    {% if parameterList.multi %}
         var nbrFileToLoad = fieldList.children('input').length;
         if(nbrFileToLoad >= 0) {
             fieldList.children('input').each(function(index){

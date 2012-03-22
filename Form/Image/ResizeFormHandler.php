@@ -50,23 +50,26 @@ class ResizeFormHandler
 
 
                     $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
-                    $tmpFileName = tempnam($this->fileManager->getDataDirWithPrefix($entityFileName), $fileId).'.'.$ext;
+                    $tmpFileName = tempnam($this->fileManager->getDataDirWithPrefix($entityFileName), $fileId);
 
                     $imagine = $this->library;
                     $image = $imagine->load(file_get_contents($this->fileManager->getOriginalAbsoluteFileName($file)));
                     $size  = new Box($dataForm['width'], $dataForm['height']);
                     $transformation = new Transformation();
                     $transformation->resize($size)
-                        ->save($tmpFileName)
+                        ->save($tmpFileName.'.'.$ext)
                         ->apply($image);
 
                     $fileVersion = $this->fileManager->createFormLocale(
-                        $tmpFileName,
+                        $tmpFileName.'.'.$ext,
                         $file->getFileName(),
                         $entityFileName,
+                        $file->getItemClass(),
+                        $file->getItemId(),
                         $file,
                         $publishParent
                     );
+                    unlink($tmpFileName);
                     return $fileVersion;
                 }
 
