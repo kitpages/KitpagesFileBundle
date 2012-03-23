@@ -51,11 +51,6 @@ $loader->registerNamespaces(array(
     'Imagine'          => __DIR__.'/../vendor/imagine/lib',
 ));
 
-
-display the html file in a twig
-============
-{% render 'KitpagesFileBundle:Render:htmlWidget' with {'fileInfo':data.media.mainImage.0.default, 'parameterList':{'class':cssClassFile } %}
-
 Extend entity
 ============
 see entity File

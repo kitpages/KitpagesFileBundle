@@ -143,20 +143,6 @@ interface FileInterface {
     public function getMimeType();
 
     /**
-     * Set html
-     *
-     * @param string $html
-     */
-    public function setHtml($html);
-
-    /**
-     * Get html
-     *
-     * @return string
-     */
-    public function getHtml();
-
-    /**
      * Set itemCategory
      *
      * @param string $itemCategory

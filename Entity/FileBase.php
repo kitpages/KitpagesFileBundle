@@ -247,31 +247,6 @@ class FileBase implements FileInterface {
     }
 
     /**
-     * @var string $html
-     */
-    private $html;
-
-
-    /**
-     * Set html
-     *
-     * @param string $html
-     */
-    public function setHtml($html)
-    {
-        $this->html = $html;
-    }
-
-    /**
-     * Get html
-     *
-     * @return string 
-     */
-    public function getHtml()
-    {
-        return $this->html;
-    }
-    /**
      * @var boolean $publishParent
      */
     private $publishParent;

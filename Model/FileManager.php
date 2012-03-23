@@ -205,19 +205,6 @@ class FileManager {
        return $data;
     }
 
-    public function renderHtml($type, $fileName) {
-        $html = '';
-        if($type == 'image'){
-            $html = '<img class="[[file:parameter:class]]" src="[[file:url]]" />';
-        } elseif ($type == 'video') {
-
-        } elseif ($type == 'application') {
-            $html = '<a class="[[file:parameter:class]]" href="[[file:url]]">'.$fileName.'</a>';
-        }
-
-        return $html;
-    }
-
     public function createFile(
         $fileName,
         $entityFileName,
@@ -239,8 +226,6 @@ class FileManager {
         $typeList = explode('/', $mimeType);
         $file->setType($typeList[0]);
         $file->setMimeType($mimeType);
-
-        $file->setHtml($this->renderHtml($typeList[0], $fileName));
 
         return $file;
     }

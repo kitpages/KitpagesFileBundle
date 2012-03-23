@@ -16,16 +16,6 @@ class File extends FileBase {
     {
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
-    /**
-     * Add children
-     *
-     * @param Kitpages\FileBundle\Entity\FileBase $children
-     */
-    public function addFileBase(\Kitpages\FileBundle\Entity\FileBase $children)
-    {
-        $this->children[] = $children;
-    }
 
     /**
      * Get children
@@ -55,5 +45,15 @@ class File extends FileBase {
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * Add children
+     *
+     * @param Kitpages\FileBundle\Entity\File $children
+     */
+    public function addFile(\Kitpages\FileBundle\Entity\File $children)
+    {
+        $this->children[] = $children;
     }
 }

@@ -11,20 +11,6 @@ use Kitpages\FileBundle\Entity\File;
 class RenderController extends Controller
 {
 
-    public function htmlWidgetAction($fileInfo, $parameterList = array()){
-
-        $resultingHtml = $fileInfo['html'];
-        foreach ($parameterList as $paramName => $paramValue) {
-            $resultingHtml = str_replace("[[file:parameter:$paramName]]", $paramValue, $resultingHtml);
-        }
-        if ($fileInfo['type'] == 'image' || $fileInfo['type'] == 'application') {
-            $resultingHtml = str_replace("[[file:url]]", $fileInfo['url'], $resultingHtml);
-        }
-        $resultingHtml = preg_replace("#\[\[file:(.+)\]\]#", '', $resultingHtml);
-
-        return new Response($resultingHtml);
-    }
-
     public function viewAction($entityFileName){
         $fileManager = $this->get('kitpages.file.manager');
         $fileClass = $fileManager->getFileClass($entityFileName);

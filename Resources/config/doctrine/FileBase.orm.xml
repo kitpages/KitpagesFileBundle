@@ -23,8 +23,6 @@
 
         <field name="mimeType" column="mime_type" type="string" length="250" nullable="true" />
 
-        <field name="html" column="html" type="string" length="1000" nullable="true" />
-
         <field name="itemCategory" column="item_category" type="string" length="250" nullable="true" />
 
         <field name="itemClass" column="item_class" type="string" length="250" nullable="true" />
