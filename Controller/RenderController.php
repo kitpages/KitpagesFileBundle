@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Kitpages\FileBundle\Model\FileManager;
 use Kitpages\FileBundle\Entity\File;
 
+use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
 
 class RenderController extends Controller
 {
@@ -20,8 +21,8 @@ class RenderController extends Controller
         if (!is_null($fileId)) {
             $file = $em->getRepository($fileClass)->find($fileId);
             if ($file != null) {
-                $fileManager->getFile(
-                    $fileManager->getOriginalAbsoluteFileName($file),
+                $fileManager->getFileSystem()->sendFileToBrowser(
+                    new AdapterFile($fileManager->getFilePath($file)),
                     $file->getFileName()
                 );
             }

@@ -25,13 +25,10 @@
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="router"/>
             <argument type="service" id="logger"/>
-            <argument type="service" id="kitpages.util"/>
-            <argument>%kitpages_file.data_dir%</argument>
-            <argument>%kitpages_file.public_prefix%</argument>
-            <argument>%kitpages_file.base_url%</argument>
+            <argument type="service" id="kitpages_file_system.file_system.kitpagesfile"/>
+            <argument>%kitpages_file.tmp_dir%</argument>
             <argument>%kitpages_file.entity_file_name_list%</argument>
             <argument>%kitpages_file.type_list%</argument>
-            <argument>%kernel.root_dir%</argument>
         </service>
 
         <service id="kitpages.file.sessionListener" class="%kitpages_file.sessionListener.class%">

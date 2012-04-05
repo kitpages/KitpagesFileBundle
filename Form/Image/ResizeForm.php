@@ -16,9 +16,13 @@ class ResizeForm extends FileActionForm
         $widthFieldParameter = array('label'=>'Width', 'required' => false);
         $heightFieldParameter = array("label" => "Height", 'required' => false);
         if ($this->file != null) {
-            $fileInfo = getimagesize($this->fileManager->getOriginalAbsoluteFileName($this->file));
-            $widthFieldParameter['data'] = $fileInfo[0];
-            $heightFieldParameter['data'] = $fileInfo[1];
+            $fileInfo = $this->file->getData();
+            if (isset($fileInfo['width'])) {
+                $widthFieldParameter['data'] = $fileInfo['width'];
+            }
+            if (isset($fileInfo['height'])) {
+                $heightFieldParameter['data'] = $fileInfo['height'];
+            }
             $ratioFieldParameter['data'] = true;
         }
 

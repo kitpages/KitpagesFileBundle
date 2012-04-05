@@ -37,13 +37,7 @@ class KitpagesFileExtension extends Extension
         $loader->load('services.xml');
 
         $this->remapParameters($config, $container, array(
-            'data_dir'  => 'kitpages_file.data_dir'
-        ));
-        $this->remapParameters($config, $container, array(
-            'public_prefix'  => 'kitpages_file.public_prefix'
-        ));
-        $this->remapParameters($config, $container, array(
-            'base_url'  => 'kitpages_file.base_url'
+            'tmp_dir'  => 'kitpages_file.tmp_dir'
         ));
         $this->remapParameters($config, $container, array(
             'entity_file_name_list'  => 'kitpages_file.entity_file_name_list'

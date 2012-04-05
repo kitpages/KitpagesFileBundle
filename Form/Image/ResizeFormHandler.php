@@ -12,6 +12,7 @@ use Imagine\Image\Box;
 use Imagine\Filter\Transformation;
 
 use Kitpages\FileBundle\Model\FileManager;
+use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
 
 class ResizeFormHandler
 {
@@ -50,10 +51,14 @@ class ResizeFormHandler
 
 
                     $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
-                    $tmpFileName = tempnam($this->fileManager->getDataDirWithPrefix($entityFileName), $fileId);
+                    $tmpFileName = tempnam($this->fileManager->getTmpDir(), $fileId);
 
                     $imagine = $this->library;
-                    $image = $imagine->load(file_get_contents($this->fileManager->getOriginalAbsoluteFileName($file)));
+                    $image = $imagine->load(
+                        $this->fileManager->getFileSystem()->getFileContent(
+                            new AdapterFile($this->fileManager->getFilePath($file))
+                        )
+                    );
                     $size  = new Box($dataForm['width'], $dataForm['height']);
                     $transformation = new Transformation();
                     $transformation->resize($size)

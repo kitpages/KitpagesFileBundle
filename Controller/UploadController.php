@@ -19,19 +19,7 @@ class UploadController extends Controller
 
     public function checkAction()
     {
-        $dataDir = $this->container->getParameter('kitpages_file.data_dir');
-        $util = $this->get('kitpages.util');
-        $util->mkdirr($dataDir);
-
-        $fileArray = array();
-        foreach ($_POST as $key => $value) {
-            if ($key != 'folder') {
-                if (file_exists($dataDir.'/'.$value)) {
-                    $fileArray[$key] = $value;
-                }
-            }
-        }
-        return new Response( json_encode($fileArray) );
+        return new Response();
     }
 
     /**

@@ -12,8 +12,8 @@ use Kitpages\FileBundle\Entity\FileInterface;
 use Kitpages\FileBundle\Event\FileEvent;
 use Kitpages\FileBundle\KitpagesFileEvents;
 
-use Kitpages\UtilBundle\Service\Util;
-
+use Kitpages\FileSystemBundle\Service\Adapter\AdapterInterface;
+use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
 
 class FileManager {
     ////
@@ -23,11 +23,8 @@ class FileManager {
     protected $doctrine = null;
     protected $router = null;
     protected $logger = null;
-    protected $util = null;
-    protected $dataDir = null;
-    protected $publicPrefix = null;
-    protected $baseUrl = null;
-    protected $webRootDir = null;
+    protected $fileSystem = null;
+    protected $tmp_dir = null;
     protected $entityFileList = array();
     protected $typeList = array();
 
@@ -36,23 +33,18 @@ class FileManager {
         EventDispatcherInterface $dispatcher,
         RouterInterface $router,
         LoggerInterface $logger,
-        Util $util,
-        $dataDir,
-        $publicPrefix,
-        $baseUrl,
+        AdapterInterface $fileSystem,
+        $tmp_dir,
         $entityFileList,
-        $typeList,
-        $kernelRootDir
+        $typeList
     )
     {
         $this->dispatcher = $dispatcher;
         $this->doctrine = $doctrine;
         $this->router = $router;
         $this->logger = $logger;
-        $this->util = $util;
-        $this->dataDir = $dataDir;
-        $this->publicPrefix = $publicPrefix;
-        $this->baseUrl = $baseUrl;
+        $this->fileSystem = $fileSystem;
+        $this->tmpDir = $tmp_dir;
         $this->entityFileList = $entityFileList;
         $this->typeList = $typeList;
 
@@ -60,12 +52,19 @@ class FileManager {
             $entityClassList[$entityFile] = $entityFileInfo['class'];
         }
         $this->entityClassList = $entityClassList;
+        if (!is_dir($this->tmpDir)) {
+            mkdir($this->tmpDir, 700, true);
+        }
 
-        $this->webRootDir = realpath($kernelRootDir.'/../web');
+
     }
 
-    public function getFilePublicAbsoluteRootDir() {
-        return $this->webRootDir.'/'.$this->publicPrefix;
+    public function getFileSystem() {
+        return $this->fileSystem;
+    }
+
+    public function getTmpDir() {
+        return $this->tmpDir;
     }
 
     public function getTypeList() {
@@ -97,14 +96,6 @@ class FileManager {
         return $entityFileName;
     }
 
-    public function getDataDirWithPrefix($entityFileName, $file = null) {
-        if ($file != null) {
-            $entityFileName = $this->getEntityName($file);
-        }
-        $prefix = $this->getDataDirPrefix($entityFileName);
-        return $this->dataDir.$prefix;
-    }
-
 
 
     /**
@@ -117,10 +108,16 @@ class FileManager {
         return $fileClass;
     }
 
-    public function getDataDirPrefix($entityFileName)
+    public function getDataDirPrefix($entityFileName, $file = null)
     {
+        if ($file != null) {
+            $entityFileName = $this->getEntityName($file);
+        }
         $fileList = $this->entityFileList;
         $fileDataDirPrefix = $fileList[$entityFileName]['data_dir_prefix'];
+        if ($fileDataDirPrefix != null) {
+            $fileDataDirPrefix = $fileDataDirPrefix.'/';
+        }
         return $fileDataDirPrefix;
     }
 
@@ -146,13 +143,6 @@ class FileManager {
     {
         return $this->doctrine;
     }
-    /**
-     * @return Util
-     */
-    public function getUtil()
-    {
-        return $this->util;
-    }
 
     ////
     // actions
@@ -167,13 +157,7 @@ class FileManager {
             'fileExtension' => $ext,
             'fileType' => $file->getType(),
             'isPrivate' => $file->getIsPrivate(),
-            'url' => $this->router->generate(
-                'kitpages_file_render',
-                array(
-                    'entityFileName' => $entityFileName,
-                    'id' => $file->getId()
-                )
-            )
+            'url' => $this->getFileLocationPrivate($file->getId(), $entityFileName)
         );
         $type = $this->getType($file->getType());
         if (count($type) > 0) {
@@ -231,7 +215,7 @@ class FileManager {
     }
 
     public function createFormLocale(
-        $tempFileName,
+        $tempFilePath,
         $fileName,
         $entityFileName,
         $itemClass = null,
@@ -241,12 +225,11 @@ class FileManager {
     ) {
         // send on event
         $event = new FileEvent();
-        $event->set('tempFileName', $tempFileName);
+        $event->set('tempFilePath', $tempFilePath);
         $event->set('fileName', $fileName);
-        $event->set('dataDir', $this->getDataDirWithPrefix($entityFileName));
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $tempFileName);
+        $mimeType = finfo_file($finfo, $tempFilePath);
         finfo_close($finfo);
 
         // the parent file is always the original
@@ -275,11 +258,12 @@ class FileManager {
             $em->flush();
 
             // manage upload
-            $targetFileName = $this->getOriginalAbsoluteFileName($file);
-            $originalDir = dirname($targetFileName);
-            $this->getUtil()->mkdirr($originalDir);
-
-            if (rename($tempFileName,$targetFileName)) {
+            if (
+                $this->fileSystem->moveTempToAdapter(
+                    $tempFilePath,
+                    new AdapterFile($this->getFilePath($file))
+                )
+            ) {
                 $file->setHasUploadFailed(false);
             }
             else {
@@ -293,15 +277,14 @@ class FileManager {
     }
 
 
-    public function upload($tempFileName, $fileName, $entityFileName, $itemClass = null, $itemId = null) {
+    public function upload($uploadFileName, $fileName, $entityFileName, $itemClass = null, $itemId = null) {
         // send on event
         $event = new FileEvent();
-        $event->set('tempFileName', $tempFileName);
+        $event->set('tempFileName', $uploadFileName);
         $event->set('fileName', $fileName);
-        $event->set('dataDir', $this->getDataDirWithPrefix($entityFileName));
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $tempFileName);
+        $mimeType = finfo_file($finfo, $uploadFileName);
         finfo_close($finfo);
 
         $file = $this->createFile($fileName, $entityFileName, $mimeType, $itemClass, $itemId);
@@ -318,16 +301,22 @@ class FileManager {
             $em->flush();
 
             // manage upload
-            $targetFileName = $this->getOriginalAbsoluteFileName($file);
-            $originalDir = dirname($targetFileName);
-            $this->getUtil()->mkdirr($originalDir);
+            $tempFilePath = tempnam($this->getTmpDir(), $file->getId());
 
-            if (move_uploaded_file($tempFileName, $targetFileName)) {
+
+            move_uploaded_file($uploadFileName, $tempFilePath);
+            if (
+                $this->fileSystem->moveTempToAdapter(
+                    $tempFilePath,
+                    new AdapterFile('test.txt')
+                )
+            ) {
                 $file->setHasUploadFailed(false);
             }
             else {
                 $file->setHasUploadFailed(true);
             }
+            unlink($tempFilePath);
             $em->flush();
         }
         // send after event
@@ -342,10 +331,8 @@ class FileManager {
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileDelete, $event);
         if (!$event->isDefaultPrevented()) {
             // remove original file
-            $targetFileName = $this->getOriginalAbsoluteFileName($file);
-            if (is_file($targetFileName)) {
-                unlink($targetFileName);
-            }
+            $this->fileSystem->unlink(new AdapterFile($this->getFilePath($file)));
+
             $em = $this->getDoctrine()->getEntityManager();
             $em->remove($file);
             $em->flush();
@@ -367,16 +354,17 @@ class FileManager {
         }
     }
 
-    public function unpublish($dir)
+    public function unpublish($filePath, $private)
     {
         $event = new FileEvent();
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileUnpublish, $event);
         if (!$event->isDefaultPrevented()) {
-            $targetDir = $this->webRootDir.'/'.$dir;
             // remove publish file
-            if (is_dir($targetDir)) {
-                $this->getUtil()->rmdirr($targetDir);
+            $this->fileSystem->unlink(new AdapterFile($filePath, $private));
+            if (!$private){
+                $this->fileSystem->rmdirr(new AdapterFile(dirname($filePath), $private));
             }
+
         }
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFileUnpublish, $event);
     }
@@ -387,16 +375,12 @@ class FileManager {
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFilePublish, $event);
         if (!$event->isDefaultPrevented() && !$file->getIsPrivate()) {
-            $targetDir = $this->getFilePublicAbsoluteDir($file);
-
-            if (!is_file($targetDir."/".$file->getFileName())) {
-                if (is_dir($targetDir)) {
-                    $this->getUtil()->rmdirr($targetDir);
-                }
-                $this->getUtil()->mkdirr($targetDir);
-                if (is_file($this->getOriginalAbsoluteFileName($file))) {
-                    copy($this->getOriginalAbsoluteFileName($file), $targetDir."/".$file->getFileName() ) ;
-                }
+            $filePublic = new AdapterFile($this->getFilePath($file, false), false);
+            if (!$this->fileSystem->isFile($filePublic)) {
+                $this->fileSystem->copy(
+                    new AdapterFile($this->getFilePath($file)),
+                    $filePublic
+                );
             }
 
             if ($file->getPublishParent()) {
@@ -410,54 +394,40 @@ class FileManager {
         $this->getDispatcher()->dispatch(KitpagesFileEvents::afterFilePublish, $event);
     }
 
-    public function getOriginalAbsoluteFileName(FileInterface $file)
+    public function privateFileExist($nameFile) {
+        return true;
+    }
+
+    public function getFilePath(FileInterface $file, $private = true)
     {
         $idString = (string) $file->getId();
         if (strlen($idString)== 1) {
             $idString = '0'.$idString;
         }
         $dir = substr($idString, 0, 2);
-        // manage upload
-        $originalDir = $this->getDataDirWithPrefix(null, $file).'/original/'.$dir;
-        $fileName = $originalDir.'/'.$file->getId().'-'.$file->getFilename();
-        return $fileName;
-    }
+        $originalDir = 'data/bundle/kitpagesfile/'.$this->getDataDirPrefix(null, $file).$dir;
 
-    public function getFilePublicAbsolute(FileInterface $file)
-    {
-        return $this->getFilePublicAbsoluteDir($file)."/".$file->getFileName();
-    }
-
-    public function getFilePublicAbsoluteDir(FileInterface $file)
-    {
-        $idString = (string) $file->getId();
-        if (strlen($idString)== 1) {
-            $idString = '0'.$idString;
+        if ($private) {
+            $fileName = $originalDir.'/'.$file->getId().'-'.$file->getFilename();
+            return $fileName;
+        } else {
+            return $originalDir.'/'.$file->getId()."/".$file->getFileName();
         }
-        $dir = substr($idString, 0, 2);
-        $entityName = $this->getEntityName($file);
-        return $this->webRootDir.'/'.$this->publicPrefix.$this->entityFileList[$entityName]['data_dir_prefix'].'/'.$dir.'/'.$file->getId();
     }
 
-    public function getFilePublicLocation(FileInterface $file)
+    public function getFileLocationPublic(FileInterface $file)
     {
-        $idString = (string) $file->getId();
-        if (strlen($idString)== 1) {
-            $idString = '0'.$idString;
+        $private = false;
+        return $this->fileSystem->getFileLocation(new AdapterFile($this->getFilePath($file, $private), $private));
+    }
+
+    public function getFileLocationPrivate($id, $entityFileName = null){
+
+        $parameterList = array('id' => $id);
+        if ($entityFileName != null) {
+            $parameterList['entityFileName'] = $entityFileName;
         }
-        $dir = substr($idString, 0, 2);
-        $entityName = $this->getEntityName($file);
-        return $this->baseUrl.'/'.$this->publicPrefix.$this->entityFileList[$entityName]['data_dir_prefix'].'/'.$dir.'/'.$file->getId();
-    }
-
-    public function getFileLocation($id){
-        return $this->baseUrl."/file/render?id=".$id;
-    }
-
-
-    public function getFile($url, $name)
-    {
-        return $this->getUtil()->getFile($url, 0, null, $name);
+        return $this->router->generate('kitpages_file_render', $parameterList);
     }
 
 }

@@ -39,7 +39,7 @@ EOT
             foreach($fileList as $file) {
                 $type = $file->getType();
                 $mimeType = $file->getMimeType();
-                $filePath = $fileManager->getOriginalAbsoluteFileName($file);
+                $filePath = $fileManager->getFilePath($file);
                 if (($type == null || $mimeType == null)
                     && file_exists($filePath)) {
                     $finfo = finfo_open(FILEINFO_MIME_TYPE);

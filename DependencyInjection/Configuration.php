@@ -42,16 +42,8 @@ class Configuration implements ConfigurationInterface
     {
         $node
             ->children()
-                ->scalarNode('data_dir')
-                    ->defaultValue('%kernel.root_dir%/data/bundle/kitpagesfile')
-                    ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('public_prefix')
-                    ->defaultValue('data/bundle/kitpagesfile')
-                    ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('base_url')
-                    ->defaultValue('data/bundle/kitpagesfile')
+                ->scalarNode('tmp_dir')
+                    ->defaultValue('%kernel.root_dir%/data/tmp/bundle/kitpagesfile')
                     ->cannotBeEmpty()
                 ->end()
                 ->scalarNode('entity_file_name_default')
