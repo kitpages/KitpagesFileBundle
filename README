@@ -24,14 +24,9 @@ UPDATE DATABASE IF EXISTS
 ===========
 updates an existing database in version1.2.0
 
-launch command:
-php app/console kitFile:updateDatabase
-
 Installation ImagineBundle and kitpagesFileSystemBundle
 ============
-Step 1
-bin/vendors.php
-
+Step1:
 add the following entries to the deps in the root of your project file:
 
 [Imagine]
@@ -61,6 +56,34 @@ Add the following entries to your autoloader:
             new Kitpages\FileSystemBundle\KitpagesFileSystemBundle(),
         );
 
+Step4:
+Configuration example
+=====================
+kitpages_file:
+    tmp_dir: %kernel.root_dir%/data/tmp
+    type_list:
+        image:
+            resize:
+                form: 'kit_file.image.resize.form'
+                form_twig: 'KitpagesFileBundle:ActionOnFile:Image/Resize/form.html.twig'
+                handler_form: 'kit_file.image.resize.form.handler'
+                library: 'imagine.gd'
+
+kitpages_file_system:
+    file_system_list:
+        kitpagesFile:
+            local:
+                directory_public: %kernel.root_dir%/../web
+                directory_private: %kernel.root_dir%
+                base_url: %base_url%
+
+Step5:
+php bin/vendors update
+
+Step6:
+launch command:
+php app/console kitFile:updateDatabase
+
 Extend entity
 ============
 see entity File
@@ -83,25 +106,7 @@ complete config.yml
 
 
 
-Configuration example
-=====================
-kitpages_file:
-    tmp_dir: %kernel.root_dir%/data/tmp
-    type_list:
-        image:
-            resize:
-                form: 'kit_file.image.resize.form'
-                form_twig: 'KitpagesFileBundle:ActionOnFile:Image/Resize/form.html.twig'
-                handler_form: 'kit_file.image.resize.form.handler'
-                library: 'imagine.gd'
 
-kitpages_file_system:
-    file_system_list:
-        kitpagesFile:
-            local:
-                directory_public: %kernel.root_dir%/../web
-                directory_private: %kernel.root_dir%
-                base_url: %base_url%
 
 
 

@@ -68,6 +68,7 @@ EOT
             $em->flush();
             $output->writeln(sprintf('Modify Database for <comment>%s</comment>', $entityClass));
         }
+        $output->writeln(sprintf('Verify that it works and delete %s', realpath(__DIR__.'/../../../../app/').'/data/bundle/kitpagesfile'));
     }
 
     public function getPath(FileInterface $file, $entityFile)
