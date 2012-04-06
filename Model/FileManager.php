@@ -101,6 +101,15 @@ class FileManager {
     /**
      * @return class entity
      */
+
+    public function getEntityFile($entityFileName, $file = null)
+    {
+        if ($file != null) {
+            $entityFileName = $this->getEntityName($file);
+        }
+        return $this->entityFileList[$entityFileName];
+    }
+
     public function getFileClass($entityFileName)
     {
         $fileList = $this->entityFileList;
@@ -194,7 +203,8 @@ class FileManager {
         $entityFileName,
         $mimeType,
         $itemClass,
-        $itemId
+        $itemId,
+        $fileInfo
     ) {
         $fileClass = $this->getFileClass($entityFileName);
 
@@ -205,7 +215,7 @@ class FileManager {
         $file->setStatus(FileInterface::STATUS_TEMP);
         $file->setFileName($fileName);
         $file->setIsPrivate(false);
-        $file->setData(array());
+        $file->setData($fileInfo);
 
         $typeList = explode('/', $mimeType);
         $file->setType($typeList[0]);
@@ -232,8 +242,10 @@ class FileManager {
         $mimeType = finfo_file($finfo, $tempFilePath);
         finfo_close($finfo);
 
+        $fileInfo = $this->fileInfo($tempFilePath, $mimeType);
+
         // the parent file is always the original
-        $file = $this->createFile($fileName, $entityFileName, $mimeType, $itemClass, $itemId);
+        $file = $this->createFile($fileName, $entityFileName, $mimeType, $itemClass, $itemId, $fileInfo);
         if ($fileParent != null && $fileParent instanceof FileInterface  ) {
             $fileParentParent = $fileParent->getParent();
             if ($fileParentParent != null && $fileParentParent instanceof FileInterface) {
@@ -277,6 +289,23 @@ class FileManager {
     }
 
 
+    public function fileInfo($file, $mimeType) {
+
+        $fileStat = stat($file);
+
+        $infoList['size'] = $fileStat['7'];
+        $infoList['mtime'] = $fileStat['9'];
+
+        $typeList = explode('/', $mimeType);
+        if ($typeList[0] == 'image') {
+            $imageInfo = getimagesize($file);
+            $infoList['width'] = $imageInfo[0];
+            $infoList['height'] = $imageInfo[1];
+        }
+        return $infoList;
+
+    }
+
     public function upload($uploadFileName, $fileName, $entityFileName, $itemClass = null, $itemId = null) {
         // send on event
         $event = new FileEvent();
@@ -287,7 +316,9 @@ class FileManager {
         $mimeType = finfo_file($finfo, $uploadFileName);
         finfo_close($finfo);
 
-        $file = $this->createFile($fileName, $entityFileName, $mimeType, $itemClass, $itemId);
+        $fileInfo = $this->fileInfo($uploadFileName, $mimeType);
+
+        $file = $this->createFile($fileName, $entityFileName, $mimeType, $itemClass, $itemId, $fileInfo);
 
         $event->set('fileObject', $file);
         $this->getDispatcher()->dispatch(KitpagesFileEvents::onFileUpload, $event);
@@ -308,7 +339,8 @@ class FileManager {
             if (
                 $this->fileSystem->moveTempToAdapter(
                     $tempFilePath,
-                    new AdapterFile('test.txt')
+                    new AdapterFile($this->getFilePath($file)),
+                    $mimeType
                 )
             ) {
                 $file->setHasUploadFailed(false);
@@ -405,7 +437,7 @@ class FileManager {
             $idString = '0'.$idString;
         }
         $dir = substr($idString, 0, 2);
-        $originalDir = 'data/bundle/kitpagesfile/'.$this->getDataDirPrefix(null, $file).$dir;
+        $originalDir = $this->getDataDirPrefix(null, $file).$dir;
 
         if ($private) {
             $fileName = $originalDir.'/'.$file->getId().'-'.$file->getFilename();

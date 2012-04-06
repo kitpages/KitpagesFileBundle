@@ -51,19 +51,7 @@ Add the following entries to your autoloader:
 $loader->registerNamespaces(array(
     // ...
     'Imagine'          => __DIR__.'/../vendor/imagine/lib',
-    'Knp\Bundle'       => __DIR__.'/../vendor/bundles',
-    'Gaufrette'        => __DIR__.'/../vendor/gaufrette/src',
 ));
-* AppKernel.php
-    new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
-
-
-and to app/autoload.php, at the end:
-
-// AWS SDK needs a special autoloader
-require_once __DIR__.'/../vendor/aws-sdk/sdk.class.php';
-
-
 
 Extend entity
 ============
