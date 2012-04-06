@@ -27,7 +27,7 @@ updates an existing database in version1.2.0
 launch command:
 php app/console kitFile:updateDatabase
 
-Installation ImagineBundle
+Installation ImagineBundle and kitpagesFileSystemBundle
 ============
 Step 1
 bin/vendors.php
@@ -38,8 +38,9 @@ add the following entries to the deps in the root of your project file:
     git=http://github.com/avalanche123/Imagine.git
     target=imagine
 
-[aS3StreamWrapper]
-    git=http://github.com/punkave/aS3StreamWrapper.git
+[KitpagesFileSystemBundle]
+    git=http://github.com/kitpages/KitpagesFileSystemBundle.git
+    target=Kitpages/FileSystemBundle
 
 Step2: Configure the autoloader
 
@@ -52,6 +53,13 @@ $loader->registerNamespaces(array(
     // ...
     'Imagine'          => __DIR__.'/../vendor/imagine/lib',
 ));
+
+Step3: AppKernel.php
+Add the following entries to your autoloader:
+        $bundles = array(
+        ...
+            new Kitpages\FileSystemBundle\KitpagesFileSystemBundle(),
+        );
 
 Extend entity
 ============
@@ -72,6 +80,28 @@ complete config.yml
         Extendentity :
             class: App\SiteBundle\Entity\Extendentity
             data_dir_prefix: /ExtendentityDir
+
+
+
+Configuration example
+=====================
+kitpages_file:
+    tmp_dir: %kernel.root_dir%/data/tmp
+    type_list:
+        image:
+            resize:
+                form: 'kit_file.image.resize.form'
+                form_twig: 'KitpagesFileBundle:ActionOnFile:Image/Resize/form.html.twig'
+                handler_form: 'kit_file.image.resize.form.handler'
+                library: 'imagine.gd'
+
+kitpages_file_system:
+    file_system_list:
+        kitpagesFile:
+            local:
+                directory_public: %kernel.root_dir%/../web
+                directory_private: %kernel.root_dir%
+                base_url: %base_url%
 
 
 

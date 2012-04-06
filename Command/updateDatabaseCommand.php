@@ -44,7 +44,7 @@ EOT
             foreach($fileList as $file) {
                 $type = $file->getType();
                 $mimeType = $file->getMimeType();
-                $filePath = $fileManager->getFilePath($file);
+                $filePath = $dataDir.$this->getPath($file, $fileManager->getEntityFile('', $file));
                 if (($type == null || $mimeType == null)
                     && file_exists($filePath)) {
                     $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -56,12 +56,14 @@ EOT
                     $em->persist($file);
                 }
 
-                $fileTemp = $dataDir.$this->getPath($file, $fileManager->getEntityFile('', $file));
+                if (file_exists($filePath)) {
+                    $fileTemp = $dataDir.$this->getPath($file, $fileManager->getEntityFile('', $file));
 
-                $fileSystemManager->moveTempToAdapter(
-                    $fileTemp,
-                    new AdapterFile($fileManager->getFilePath($file, true), true)
-                );
+                    $fileSystemManager->moveTempToAdapter(
+                        $fileTemp,
+                        new AdapterFile($fileManager->getFilePath($file, true), true)
+                    );
+                }
             }
             $em->flush();
             $output->writeln(sprintf('Modify Database for <comment>%s</comment>', $entityClass));
