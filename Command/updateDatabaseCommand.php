@@ -5,9 +5,10 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 use Kitpages\FileBundle\Entity\FileInterface;
-use  Kitpages\FileSystemBundle\ValueObject\AdapterFile;
+use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
 
 class updateDatabaseCommand extends ContainerAwareCommand
 {
@@ -15,6 +16,9 @@ class updateDatabaseCommand extends ContainerAwareCommand
     {
         $this
             ->setName('kitFile:updateDatabase')
+            ->addArgument('dataDir', InputArgument::OPTIONAL, 'path of data dir')
+            ->addOption('q', null, InputOption::VALUE_NONE, 'If set, no display message')
+            ->addOption('deleteDir', null, InputOption::VALUE_NONE, 'If set, delete directory before')
             ->setHelp(<<<EOT
 The <info>kitFile:updateDatabase</info> command updates the records in the table kit_file.
 EOT
@@ -25,19 +29,28 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
+        $dataDir = $input->getArgument('dataDir');
+        $quiet = $input->getOption('q');
+        $deleteDir = $input->getOption('deleteDir');
+
         $em = $this->getContainer()->get('doctrine')->getEntityManager('default');
 
         $fileManager = $this->getContainer()->get('kitpages.file.manager');
         $fileSystemManager = $this->getContainer()->get('kitpages_file_system.filesystem.kitpagesFile');
         $entityClassList = $fileManager->getEntityClassList();
 
+        if ($deleteDir) {
+            $resultDelete = $fileSystemManager->rmdirr(new AdapterFile('', true));
+        }
 
-        $dialog = $this->getHelperSet()->get('dialog');
-        $dataDir = $dialog->ask(
-            $output,
-            '<info>Enter the path of data dir?</info> [<comment>'.realpath(__DIR__.'/../../../../app/').'/data/bundle/kitpagesfile</comment>]:',
-            realpath(__DIR__.'/../../../../app/').'/data/bundle/kitpagesfile'
-        );
+        if (!$dataDir) {
+            $dialog = $this->getHelperSet()->get('dialog');
+            $dataDir = $dialog->ask(
+                $output,
+                '<info>Enter the path of data dir?</info> [<comment>'.realpath(__DIR__.'/../../../../app/').'/data/bundle/kitpagesfile</comment>]:',
+                realpath(__DIR__.'/../../../../app/').'/data/bundle/kitpagesfile'
+            );
+        }
 
         foreach($entityClassList as $entityClass) {
             $fileList = $em->getRepository($entityClass)->findAll();
@@ -58,7 +71,6 @@ EOT
 
                 if (file_exists($filePath)) {
                     $fileTemp = $dataDir.$this->getPath($file, $fileManager->getEntityFile('', $file));
-
                     $fileSystemManager->moveTempToAdapter(
                         $fileTemp,
                         new AdapterFile($fileManager->getFilePath($file, true), true)
@@ -66,9 +78,13 @@ EOT
                 }
             }
             $em->flush();
-            $output->writeln(sprintf('Modify Database for <comment>%s</comment>', $entityClass));
+            if (!$quiet) {
+                $output->writeln(sprintf('Modify Database for <comment>%s</comment>', $entityClass));
+            }
         }
-        $output->writeln(sprintf('Verify that it works and delete %s', realpath(__DIR__.'/../../../../app/').'/data/bundle/kitpagesfile'));
+        if (!$quiet) {
+            $output->writeln(sprintf('Verify that it works and delete %s', realpath(__DIR__.'/../../../../app/').'/data/bundle/kitpagesfile'));
+        }
     }
 
     public function getPath(FileInterface $file, $entityFile)
