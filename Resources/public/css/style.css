@@ -92,3 +92,8 @@
     font-weight: bold;
     padding: 1px 5px;
 }
+
+.kit-file-upload-line-first-div{
+    width: 50px;
+    float:left;
+}

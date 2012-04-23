@@ -260,6 +260,8 @@
 //                        '<img src="' + self._settings.urlPublishPng + '" width="20" height="20" alt="[O]" /><img src="' + self._settings.urlParentPng + '" width="20" height="20" alt="[O]" /></a>';
                 }
 
+                var firstDiv = "<div class='kit-file-upload-line-first-div'></div>";
+
                 var render =
                         '<a class="kit-file-upload-line-delete" >'+
                         '<img src="' + self._settings.urlDeletePng + '" width="20" height="20" alt="[X]"  title="delete this document" />'+
@@ -268,6 +270,7 @@
                             + buttonParent
                             + buttonMoveList
                             + selectAction
+                            + firstDiv
                             + iconHtml+' '
                             + self._settings.fileInfo.fileName
                             + '<div  style="clear:both"></div>';

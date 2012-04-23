@@ -111,7 +111,7 @@
                 $.each(self._settings['fileList'], function(index, value){
                     self._add(value, index);
                 });
-
+                self._renumbering();
             },
             _render: function() {
                 var self = this;
@@ -146,7 +146,7 @@
                     urlParentPng: self._settings.urlParentPng,
                     urlPublishPng: self._settings.urlPublishPng
                 });
-
+                self._renumbering();
                 self._boundingBox.trigger("after_add_kitFileUploadList", [fileInfo, index]);
             },
             _replace: function(fileParentId, fileId) {
@@ -157,12 +157,14 @@
             _delete: function(fileInfo) {
                 var self = this;
                 self._boundingBox.trigger("after_delete_kitFileUploadList", fileInfo.id);
+                self._renumbering();
             },
             _moveUp: function(fileInfo) {
                 var self = this;
                 var element = self._boundingBox.children('li[data-kitfileuploadlist-id="' + fileInfo.id + '"]');
                 var idCountMove = element.data('kitfileuploadlist-id');
                 element.prev().before(element);
+                self._renumbering();
                 self._boundingBox.trigger("after_moveUp_kitFileUploadList", idCountMove);
             },
             _moveDown: function(fileInfo) {
@@ -170,7 +172,17 @@
                 var element = self._boundingBox.children('li[data-kitfileuploadlist-id="' + fileInfo.id + '"]');
                 var idCountMove = element.data('kitfileuploadlist-id');
                 element.next().after(element);
+                self._renumbering();
                 self._boundingBox.trigger("after_moveDown_kitFileUploadList", idCountMove);
+            },
+            _renumbering: function() {
+                var self = this;
+                if (self._settings.isMulti == true) {
+                    self._boundingBox.children('li').each(function(index){
+                        var element = $(this);
+                        element.children('.kit-file-upload-line-first-div').html('NUM:' + index);
+                    });
+                }
             },
             ////
             // external methods
