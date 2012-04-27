@@ -53,7 +53,7 @@ class FileManager {
         }
         $this->entityClassList = $entityClassList;
         if (!is_dir($this->tmpDir)) {
-            mkdir($this->tmpDir, 700, true);
+            mkdir($this->tmpDir, 0700, true);
         }
 
 
