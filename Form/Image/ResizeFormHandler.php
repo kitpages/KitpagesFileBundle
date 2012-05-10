@@ -12,7 +12,7 @@ use Imagine\Image\Box;
 use Imagine\Filter\Transformation;
 
 use Kitpages\FileBundle\Model\FileManager;
-use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
+use Kitpages\FileSystemBundle\Model\AdapterFile;
 
 class ResizeFormHandler
 {

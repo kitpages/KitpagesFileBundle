@@ -13,7 +13,7 @@ use Kitpages\FileBundle\Event\FileEvent;
 use Kitpages\FileBundle\KitpagesFileEvents;
 
 use Kitpages\FileSystemBundle\Service\Adapter\AdapterInterface;
-use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
+use Kitpages\FileSystemBundle\Model\AdapterFile;
 use Kitpages\FileSystemBundle\FileSystemException;
 
 class FileManager {

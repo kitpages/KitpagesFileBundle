@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
 use Kitpages\FileBundle\Entity\FileInterface;
-use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
+use Kitpages\FileSystemBundle\Model\AdapterFile;
 
 class updateDatabaseCommand extends ContainerAwareCommand
 {

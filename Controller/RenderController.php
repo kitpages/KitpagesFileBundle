@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Kitpages\FileBundle\Model\FileManager;
 use Kitpages\FileBundle\Entity\File;
 
-use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
+use Kitpages\FileSystemBundle\Model\AdapterFile;
 
 class RenderController extends Controller
 {
