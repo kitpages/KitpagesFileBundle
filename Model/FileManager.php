@@ -14,6 +14,7 @@ use Kitpages\FileBundle\KitpagesFileEvents;
 
 use Kitpages\FileSystemBundle\Service\Adapter\AdapterInterface;
 use Kitpages\FileSystemBundle\ValueObject\AdapterFile;
+use Kitpages\FileSystemBundle\FileSystemException;
 
 class FileManager {
     ////
@@ -270,15 +271,14 @@ class FileManager {
             $em->flush();
 
             // manage upload
-            if (
-                $this->fileSystem->moveTempToAdapter(
+            try {
+                $this->fileSystem->copyTempToAdapter(
                     $tempFilePath,
                     new AdapterFile($this->getFilePath($file))
-                )
-            ) {
+                );
                 $file->setHasUploadFailed(false);
             }
-            else {
+            catch (FileSystemException $e) {
                 $file->setHasUploadFailed(true);
             }
             $em->flush();
@@ -336,16 +336,15 @@ class FileManager {
 
 
             move_uploaded_file($uploadFileName, $tempFilePath);
-            if (
-                $this->fileSystem->moveTempToAdapter(
+            try {
+                $this->fileSystem->copyTempToAdapter(
                     $tempFilePath,
                     new AdapterFile($this->getFilePath($file)),
                     $mimeType
-                )
-            ) {
+                );
                 $file->setHasUploadFailed(false);
             }
-            else {
+            catch (FileSystemException $e) {
                 $file->setHasUploadFailed(true);
             }
             unlink($tempFilePath);

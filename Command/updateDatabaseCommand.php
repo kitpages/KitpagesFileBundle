@@ -71,7 +71,7 @@ EOT
 
                 if (file_exists($filePath)) {
                     $fileTemp = $dataDir.$this->getPath($file, $fileManager->getEntityFile('', $file));
-                    $fileSystemManager->moveTempToAdapter(
+                    $fileSystemManager->copyTempToAdapter(
                         $fileTemp,
                         new AdapterFile($fileManager->getFilePath($file, true), true)
                     );
