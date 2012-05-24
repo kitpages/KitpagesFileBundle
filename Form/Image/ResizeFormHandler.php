@@ -75,6 +75,7 @@ class ResizeFormHandler
                         $publishParent
                     );
                     unlink($tmpFileName);
+                    unlink($tmpFileName.'.'.$ext);
                     return $fileVersion;
                 }
 
