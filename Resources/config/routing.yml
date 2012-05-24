@@ -3,12 +3,8 @@ file_upload_check:
     defaults: { _controller: KitpagesFileBundle:Upload:check }
 
 file_upload_do_upload:
-    pattern:  /do-upload/{entityFileName}
+    pattern:  /do-upload/{entityFileName}/{itemClass}/{itemId}
     defaults: { _controller: KitpagesFileBundle:Upload:doUpload }
-
-file_upload_upload:
-    pattern:  /upload
-    defaults: { _controller: KitpagesFileBundle:Upload:upload }
 
 kitpages_file_render:
     pattern:  /render/{entityFileName}
@@ -17,3 +13,30 @@ kitpages_file_render:
 kitpages_file_info:
     pattern:  /info/{entityFileName}
     defaults: { _controller: KitpagesFileBundle:Render:info }
+###
+# Action list
+###
+
+kitpages_file_actionOnFile_widgetEmpty:
+    pattern:  /noAction
+    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widgetEmpty }
+# default
+kitpages_file_actionOnFile_widget:
+    pattern:  /fileAction/{entityFileName}/{typeFile}/{actionFile}
+    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widget, entityFileName:default }
+
+kitpages_file_actionOnFile_do:
+    pattern:  /doAction/{entityFileName}/{typeFile}/{actionFile}
+    defaults: { _controller: KitpagesFileBundle:ActionOnFile:do, entityFileName:default }
+
+#kitpages_file_actionOnFile_widgetResizeImage:
+#    pattern:  /resizeImage
+#    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widgetResizeImage }
+#
+#kitpages_file_actionOnFile_doResizeImage:
+#    pattern:  /doResizeImage
+#    defaults: { _controller: KitpagesFileBundle:ActionOnFile:doResizeImage }
+#
+#kitpages_file_actionOnFile_widgetCropImage:
+#    pattern:  /cropImage
+#    defaults: { _controller: KitpagesFileBundle:ActionOnFile:widgetCropImage }

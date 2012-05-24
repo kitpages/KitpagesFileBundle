@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Kitpages\FileBundle\Model\FileManager;
 use Kitpages\FileBundle\Entity\File;
 
+use Kitpages\FileSystemBundle\Model\AdapterFile;
 
 class RenderController extends Controller
 {
@@ -20,8 +21,8 @@ class RenderController extends Controller
         if (!is_null($fileId)) {
             $file = $em->getRepository($fileClass)->find($fileId);
             if ($file != null) {
-                $fileManager->getFile(
-                    $fileManager->getOriginalAbsoluteFileName($file),
+                $fileManager->getFileSystem()->sendFileToBrowser(
+                    new AdapterFile($fileManager->getFilePath($file)),
                     $file->getFileName()
                 );
             }
@@ -35,27 +36,12 @@ class RenderController extends Controller
         $fileManager = $this->get('kitpages.file.manager');
         $fileClass = $fileManager->getFileClass($entityFileName);
         $fileId = $this->getRequest()->request->get('id', null);
+        $widthParent = $this->getRequest()->request->get('parent', null);
         if (!is_null($fileId)) {
             $file = $em->getRepository($fileClass)->find($fileId);
             if ($file != null) {
-                $ext = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
-                $isImage = false;
-                if (in_array($ext, array('jpg', 'jpeg', 'png', 'gif', 'webp'))) {
-                    $isImage = true;
-                }
-                $data = array(
-                    'id' => $file->getId(),
-                    'fileName' => $file->getFilename(),
-                    'fileExtension' => $ext,
-                    'isImage' => $isImage,
-                    'url' => $this->generateUrl(
-                        'kitpages_file_render',
-                        array(
-                            'entityFileName' => $entityFileName,
-                            'id' => $file->getId()
-                        )
-                    )
-                );
+                $data = $fileManager->fileDataJson($file, $entityFileName, $widthParent);
+
                 return new Response( json_encode($data) );
             }
         }

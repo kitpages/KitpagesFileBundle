@@ -7,19 +7,28 @@
     <parameters>
         <parameter key="kitpages_file.fileManager.class">Kitpages\FileBundle\Model\FileManager</parameter>
         <parameter key="kitpages_file.sessionListener.class">Kitpages\FileBundle\EventListener\SessionListener</parameter>
+        <parameter key="imagine.gd.class">Imagine\Gd\Imagine</parameter>
+        <parameter key="imagine.imagick.class">Imagine\Imagick\Imagine</parameter>
+        <parameter key="imagine.gmagick.class">Imagine\Gmagick\Imagine</parameter>
     </parameters>
 
     <services>
+
+        <service id="kitpages.file.imagine.gd" class="%imagine.gd.class%" />
+
+        <service id="kitpages.file.imagine.imagick" class="%imagine.imagick.class%" />
+
+        <service id="kitpages.file.imagine.gmagick" class="%imagine.gmagick.class%" />
+
         <service id="kitpages.file.manager" class="%kitpages_file.fileManager.class%">
             <argument type="service" id="doctrine"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="router"/>
             <argument type="service" id="logger"/>
-            <argument type="service" id="kitpages.util"/>
-            <argument>%kitpages_file.data_dir%</argument>
-            <argument>%kitpages_file.public_prefix%</argument>
-            <argument>%kitpages_file.base_url%</argument>
+            <argument type="service" id="kitpages_file_system.file_system.kitpagesfile"/>
+            <argument>%kitpages_file.tmp_dir%</argument>
             <argument>%kitpages_file.entity_file_name_list%</argument>
-            <argument>%kernel.root_dir%</argument>
+            <argument>%kitpages_file.type_list%</argument>
         </service>
 
         <service id="kitpages.file.sessionListener" class="%kitpages_file.sessionListener.class%">

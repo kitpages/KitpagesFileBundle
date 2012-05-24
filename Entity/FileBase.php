@@ -195,4 +195,156 @@ class FileBase implements FileInterface {
         return $this->status;
     }
 
+    /**
+     * @var string $type
+     */
+    private $type;
+
+    /**
+     * @var string $mimeType
+     */
+    private $mimeType;
+
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string 
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set mimeType
+     *
+     * @param string $mimeType
+     */
+    public function setMimeType($mimeType)
+    {
+        $this->mimeType = $mimeType;
+    }
+
+    /**
+     * Get mimeType
+     *
+     * @return string 
+     */
+    public function getMimeType()
+    {
+        return $this->mimeType;
+    }
+
+    /**
+     * @var boolean $publishParent
+     */
+    private $publishParent;
+
+
+    /**
+     * Set publishParent
+     *
+     * @param boolean $publishParent
+     */
+    public function setPublishParent($publishParent)
+    {
+        $this->publishParent = $publishParent;
+    }
+
+    /**
+     * Get publishParent
+     *
+     * @return boolean 
+     */
+    public function getPublishParent()
+    {
+        return $this->publishParent;
+    }
+
+    /**
+     * @var string $itemCategory
+     */
+    private $itemCategory;
+
+    /**
+     * @var string $itemClass
+     */
+    private $itemClass;
+
+    /**
+     * @var string $itemId
+     */
+    private $itemId;
+
+
+    /**
+     * Set itemCategory
+     *
+     * @param string $itemCategory
+     */
+    public function setItemCategory($itemCategory)
+    {
+        $this->itemCategory = $itemCategory;
+    }
+
+    /**
+     * Get itemCategory
+     *
+     * @return string 
+     */
+    public function getItemCategory()
+    {
+        return $this->itemCategory;
+    }
+
+    /**
+     * Set itemClass
+     *
+     * @param string $itemClass
+     */
+    public function setItemClass($itemClass)
+    {
+        $this->itemClass = $itemClass;
+    }
+
+    /**
+     * Get itemClass
+     *
+     * @return string 
+     */
+    public function getItemClass()
+    {
+        return $this->itemClass;
+    }
+
+    /**
+     * Set itemId
+     *
+     * @param string $itemId
+     */
+    public function setItemId($itemId)
+    {
+        $this->itemId = $itemId;
+    }
+
+    /**
+     * Get itemId
+     *
+     * @return string 
+     */
+    public function getItemId()
+    {
+        return $this->itemId;
+    }
 }

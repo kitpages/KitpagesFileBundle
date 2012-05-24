@@ -4,7 +4,7 @@
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <mapped-superclass name="Kitpages\FileBundle\Entity\FileBase" table="kit_file">
+    <mapped-superclass name="Kitpages\FileBundle\Entity\FileBase" repository-class="Kitpages\FileBundle\Entity\FileBaseRepository" table="kit_file">
 
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO" />
@@ -19,6 +19,17 @@
 
         <field name="status" column="status" type="string" length="250" />
 
+        <field name="type" column="type" type="string" length="250" nullable="true" />
+
+        <field name="mimeType" column="mime_type" type="string" length="250" nullable="true" />
+
+        <field name="itemCategory" column="item_category" type="string" length="250" nullable="true" />
+
+        <field name="itemClass" column="item_class" type="string" length="250" nullable="true" />
+
+        <field name="itemId" column="item_id" type="string" length="250" nullable="true" />
+
+        <field name="publishParent" column="publish_parent" type="boolean" nullable="true" />
 
         <field name="createdAt" type="datetime" nullable="true" >
             <gedmo:timestampable on="create"/>

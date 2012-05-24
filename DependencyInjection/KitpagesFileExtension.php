@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Alias;
 
 use Kitpages\FileBundle\DependencyInjection\Configuration;
 
@@ -36,13 +37,7 @@ class KitpagesFileExtension extends Extension
         $loader->load('services.xml');
 
         $this->remapParameters($config, $container, array(
-            'data_dir'  => 'kitpages_file.data_dir'
-        ));
-        $this->remapParameters($config, $container, array(
-            'public_prefix'  => 'kitpages_file.public_prefix'
-        ));
-        $this->remapParameters($config, $container, array(
-            'base_url'  => 'kitpages_file.base_url'
+            'tmp_dir'  => 'kitpages_file.tmp_dir'
         ));
         $this->remapParameters($config, $container, array(
             'entity_file_name_list'  => 'kitpages_file.entity_file_name_list'
@@ -50,6 +45,19 @@ class KitpagesFileExtension extends Extension
         $this->remapParameters($config, $container, array(
             'entity_file_name_default'  => 'kitpages_file.entity_file_name_default'
         ));
+        $this->remapParameters($config, $container, array(
+            'type_list'  => 'kitpages_file.type_list'
+        ));
+
+
+        $typeList = $container->getParameter('kitpages_file.type_list');
+
+        foreach($typeList as $type => $actionList) {
+            foreach($actionList as $action => $actionInfo) {
+                $loader->load($type.'/'.$action.'.xml');
+                $container->setAlias('kitpages_file.'.$type.'.'.$action.'.library', new Alias('kitpages.file.'.$actionInfo['library']));
+            }
+        }
     }
 
     public function getAlias()

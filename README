@@ -1,8 +1,7 @@
-KitpagesFileBundle (work in progress)
+KitpagesFileBundle
 =====================================
 
 This is an ajax upload system for symfony.
-It is still in alpha state don't use it in production.
 
 author : Philippe Le Van (@plv)
 
@@ -18,26 +17,98 @@ add vendors/ in the app/autoload.php
 add the new Bundle in app/appKernel.php
 
 You need to create a table in the database :
-CREATE TABLE upload_file
-    (
-        id INT NOT NULL AUTO_INCREMENT,
-        is_private TINYINT(1) NOT NULL,
-        file_name VARCHAR(250) NOT NULL,
-        is_published TINYINT(1) NOT NULL,
-        item_class_name VARCHAR(250),
-        item_id INT,
-        published_at DATETIME,
-        unpublished_at DATETIME,
-        createdAt DATETIME NOT NULL,
-        updatedAt DATETIME NOT NULL,
-        hasUploadFailed TINYINT(1),
-        data longtext NOT NULL COMMENT '(DC2Type:array)',
-        PRIMARY KEY (id)
-    )
-    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+launch command:
+php app/console doctrine:schema:update
 
-(or you can use php app/console doctrine:schema:update)
-
-Users Guide
+UPDATE DATABASE IF EXISTS
 ===========
+updates an existing database in version1.2.0
+
+Installation ImagineBundle and kitpagesFileSystemBundle
+============
+Step1:
+add the following entries to the deps in the root of your project file:
+
+[Imagine]
+    git=http://github.com/avalanche123/Imagine.git
+    target=imagine
+
+[KitpagesFileSystemBundle]
+    git=http://github.com/kitpages/KitpagesFileSystemBundle.git
+    target=Kitpages/FileSystemBundle
+
+Step2: Configure the autoloader
+
+Add the following entries to your autoloader:
+
+<?php
+// app/autoload.php
+* autoload.php
+$loader->registerNamespaces(array(
+    // ...
+    'Imagine'          => __DIR__.'/../vendor/imagine/lib',
+));
+
+Step3: AppKernel.php
+Add the following entries to your autoloader:
+        $bundles = array(
+        ...
+            new Kitpages\FileSystemBundle\KitpagesFileSystemBundle(),
+        );
+
+Step4:
+Configuration example
+=====================
+kitpages_file:
+    tmp_dir: %kernel.root_dir%/data/tmp
+    type_list:
+        image:
+            resize:
+                form: 'kit_file.image.resize.form'
+                form_twig: 'KitpagesFileBundle:ActionOnFile:Image/Resize/form.html.twig'
+                handler_form: 'kit_file.image.resize.form.handler'
+                library: 'imagine.gd'
+
+kitpages_file_system:
+    file_system_list:
+        kitpagesFile:
+            local:
+                directory_public: %kernel.root_dir%/../web
+                directory_private: %kernel.root_dir%
+                base_url: %base_url%
+
+Step5:
+php bin/vendors update
+
+Step6:
+launch command:
+php app/console kitFile:updateDatabase
+
+Extend entity
+============
+see entity File
+create a entity
+    - class Extendentity extends FileBase
+create a repository
+ - class ExtendentityRepository extends FileBaseRepository
+   {
+       CONST entity = 'AppSiteBundle:Extendentity';
+   }
+
+complete config.yml
+    entity_file_name_list:
+        default :
+            class: Kitpages\FileBundle\Entity\File
+            data_dir_prefix: /default
+        Extendentity :
+            class: App\SiteBundle\Entity\Extendentity
+            data_dir_prefix: /ExtendentityDir
+
+
+
+
+
+
+
+
 

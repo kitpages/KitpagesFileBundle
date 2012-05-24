@@ -10,7 +10,7 @@ class FileExtension extends \Twig_Extension
     {
         return  '<div id="kit-file-container-'.$fieldId.'" class="kit-file-container">'.
                 '    <input id="kit-file-upload-'.$fieldId.'" class="file-upload-field" name="file-upload-'.$fieldId.'" type="file" />'.
-                '    <ul class="kit-file-image-list">'.
+                '    <ul class="kit-file-upload-list">'.
                 '    </ul>'.
                 '</div>';
     }
