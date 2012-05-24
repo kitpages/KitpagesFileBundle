@@ -1,0 +1,28 @@
+{
+    "name": "kitpages/file-bundle",
+    "type": "symfony-bundle",
+    "description": "FileBundle manages uploads and manipulations of files for the Kitpages CMS Bundle",
+    "keywords": ["Files", "upload", "resize", "encoding", "kitpages cms"],
+    "homepage": "https://github.com/kitpages/KitpagesFileBundle",
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Sebastien Lefebvre"
+        },
+        {
+            "name": "Philippe Le Van",
+            "homepage": "https://twitter.com/#!/plv"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/framework-bundle": "2.0.*",
+        "avalanche123/imagine-bundle": "*",
+        "kitpages/file-system-bundle": ">=v1.0.0",
+        "kitpages/util-bundle": ">=v1.0.0"
+    },
+    "autoload": {
+        "psr-0": { "Kitpages\\FileBundle": "" }
+    },
+    "target-dir": "Kitpages/FileBundle"
+}
