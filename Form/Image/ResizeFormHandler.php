@@ -90,18 +90,20 @@ class ResizeFormHandler
         return null;
     }
 
-
-
-
-
     private function getRenderErrorMessages(\Symfony\Component\Form\Form $form) {
         $errorFieldList = $this->getErrorMessages($form);
         $errorHtml = '<ul>';
         foreach($errorFieldList as $errorList) {
-            foreach($errorList as $error)
-            $errorHtml .= '<li>'.$error.'</li>';
+            if (is_array($errorList)) {
+                foreach($errorList as $error) {
+                    $errorHtml .= '<li>'.$error.'</li>';
+                }
+            } else {
+                $errorHtml .= '<li>'.$errorList.'</li>';
+            }
         }
         $errorHtml .= '</ul>';
+
         return $errorHtml;
     }
 
