@@ -22,8 +22,8 @@
         "kitpages/util-bundle": "2.1.*"
     },
     "require-dev": {
-        "kitpages/file-system-bundle": "master",
-        "kitpages/util-bundle": "master"
+        "kitpages/file-system-bundle": "dev-master",
+        "kitpages/util-bundle": "dev-master"
     },
     "autoload": {
         "psr-0": { "Kitpages\\FileBundle": "" }
