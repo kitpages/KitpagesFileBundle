@@ -19,7 +19,7 @@
         "symfony/framework-bundle": "2.1.*",
         "avalanche123/imagine-bundle": "*",
         "kitpages/file-system-bundle": "*",
-        "kitpages/util-bundle": "2.1.*"
+        "kitpages/util-bundle": "*"
     },
     "require-dev": {
         "kitpages/file-system-bundle": "dev-master",
