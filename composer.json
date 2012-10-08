@@ -18,8 +18,8 @@
         "php": ">=5.3.2",
         "symfony/framework-bundle": "2.1.*",
         "avalanche123/imagine-bundle": "*",
-        "kitpages/file-system-bundle": "*",
-        "kitpages/util-bundle": "*"
+        "kitpages/file-system-bundle": "2.1.*",
+        "kitpages/util-bundle": "2.1.*"
     },
     "require-dev": {
         "kitpages/file-system-bundle": "dev-master",
@@ -28,6 +28,5 @@
     "autoload": {
         "psr-0": { "Kitpages\\FileBundle": "" }
     },
-    "target-dir": "Kitpages/FileBundle",
-    "minimum-stability": "dev"
+    "target-dir": "Kitpages/FileBundle"
 }
