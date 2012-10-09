@@ -52,7 +52,6 @@ class Configuration implements ConfigurationInterface
                 ->end()
 
                 ->arrayNode('entity_file_name_list')
-                    ->addDefaultsIfNotSet()
                     ->useAttributeAsKey('entity_file_name')->defaultValue(array('default' => array('class' =>  'Kitpages\FileBundle\Entity\File', 'data_dir_prefix' => '')))
                         ->prototype('array')
                         ->children()
