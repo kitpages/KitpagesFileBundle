@@ -27,6 +27,5 @@
     },
     "autoload": {
         "psr-0": { "Kitpages\\FileBundle": "" }
-    },
-    "target-dir": "Kitpages/FileBundle"
+    }
 }
