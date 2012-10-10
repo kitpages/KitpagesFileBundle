@@ -2,13 +2,13 @@
 namespace Kitpages\FileBundle\Form\Image;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\Form\FormBuilderInterface;
 use Kitpages\FileBundle\Form\FileActionForm;
 
 class ResizeForm extends FileActionForm
 {
 
-    public function buildForm(FormBuilder $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
