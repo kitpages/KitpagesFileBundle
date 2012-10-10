@@ -5,7 +5,7 @@ namespace Kitpages\FileBundle\Model;
 // external service
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Bundle\DoctrineBundle\Registry;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Routing\RouterInterface;
 use Kitpages\FileBundle\Entity\File;
 use Kitpages\FileBundle\Entity\FileInterface;

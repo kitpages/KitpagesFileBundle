@@ -5,7 +5,7 @@ namespace Kitpages\FileBundle\Form\Image;
 
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\DoctrineBundle\Registry;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Form\FormError;
 
 use Imagine\Image\Box;
