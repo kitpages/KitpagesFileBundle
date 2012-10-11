@@ -265,7 +265,7 @@ class FileManager {
         if (! $event->isDefaultPrevented()) {
             // manage object creation
             $file = $event->get('fileObject');
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $em->persist($file);
 
             $em->flush();
@@ -326,7 +326,7 @@ class FileManager {
         if (! $event->isDefaultPrevented()) {
             // manage object creation
             $file = $event->get('fileObject');
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $em->persist($file);
 
             $em->flush();
@@ -364,7 +364,7 @@ class FileManager {
             // remove original file
             $this->fileSystem->unlink(new AdapterFile($this->getFilePath($file)));
 
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $em->remove($file);
             $em->flush();
         }
@@ -373,7 +373,7 @@ class FileManager {
 
     public function deleteTemp($itemCategory, $itemId, $entityFileName = 'default')
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $fileClass = $this->getFileClass($entityFileName);
         $fileList = $em->getRepository($fileClass)->findByStatusAndItem(
             FileInterface::STATUS_TEMP,

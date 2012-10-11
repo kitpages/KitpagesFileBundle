@@ -15,7 +15,7 @@ class RenderController extends Controller
     public function viewAction($entityFileName){
         $fileManager = $this->get('kitpages.file.manager');
         $fileClass = $fileManager->getFileClass($entityFileName);
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $fileManager = $this->get('kitpages.file.manager');
         $fileId = $this->getRequest()->query->get('id', null);
         if (!is_null($fileId)) {
@@ -32,7 +32,7 @@ class RenderController extends Controller
 
     public function infoAction($entityFileName)
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $fileManager = $this->get('kitpages.file.manager');
         $fileClass = $fileManager->getFileClass($entityFileName);
         $fileId = $this->getRequest()->request->get('id', null);
