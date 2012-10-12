@@ -112,8 +112,8 @@ class ResizeFormHandler
         foreach ($form->getErrors() as $key => $error) {
             $errors[] = strtr($error->getMessageTemplate(), $error->getMessageParameters());
         }
-        if ($form->hasChildren()) {
-            foreach ($form->getChildren() as $child) {
+        if (count($form) > 0 ) {
+            foreach ($form->all() as $child) {
                 if (!$child->isValid()) {
                     $errors[$child->getName()] = $this->getErrorMessages($child);
                 }
