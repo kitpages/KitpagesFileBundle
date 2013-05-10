@@ -20,8 +20,8 @@ fieldList.kitFileUploadField({
 })
 
 fieldUpoadify.uploadify({
-    'uploader'  : '{{ asset ("bundles/kitpagesfile/uploadify/uploadify.swf") }}',
-    'script'    : '{{ path('file_upload_do_upload', {'entityFileName' :entityFileName, 'itemClass' :itemClass, 'itemId': itemId}) }}',
+    'swf'  : '{{ asset ("bundles/kitpagesfile/uploadify/uploadify.swf") }}',
+    'uploader'    : '{{ path('file_upload_do_upload', {'entityFileName' :entityFileName, 'itemClass' :itemClass, 'itemId': itemId}) }}',
     'checkScript' : '{{ path('file_upload_check') }}',
     'cancelImg' : '{{ asset ("bundles/kitpagesfile/uploadify/cancel.png") }}',
     'folder'    : '/glouglou',
@@ -29,9 +29,8 @@ fieldUpoadify.uploadify({
     'scriptData' : {'kitpages_file_session_id': '{{ kitpages_file_session_id }}'},
     'multi' : {% if parameterList.multi %}true{% else %}false{% endif %},
     'auto'      : true,
-    'onComplete' : function(event, ID, fileObj, response, data) {
-        var tab = $.parseJSON(response);
+    'onUploadSuccess' : function(event, data) {
+        var tab = $.parseJSON(data);
         uploadList.trigger("add_kitFileUploadList", [tab]);
-
     }
 });
