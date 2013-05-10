@@ -20,7 +20,7 @@ class ActionOnFileController extends Controller
         $fileManager = $this->get('kitpages.file.manager');
 
         $fileClass = $fileManager->getFileClass($entityFileName);
-        $em = $em = $this->getDoctrine()->getEntityManager();
+        $em = $em = $this->getDoctrine()->getManager();
         $file = $em->getRepository($fileClass)->find($fileId);
 
 
@@ -84,7 +84,7 @@ class ActionOnFileController extends Controller
 //        $form   = $this->createForm(new ResizeImageForm());
 //
 //        if ($request->getMethod() == 'POST') {
-//            $form->bindRequest($request);
+//            $form->bind($request);
 //            if ($form->isValid()) {
 //                $data = $form->getData();
 //                  return new Response();

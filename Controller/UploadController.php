@@ -31,6 +31,8 @@ class UploadController extends Controller
     }
     public function doUploadAction($entityFileName, $itemClass, $itemId)
     {
+        $logger = $this->get('logger');
+        $logger->debug("************ FileBundle::DoUpload");
         $fileManager = $this->getFileManager();
         $file = $fileManager->upload(
             $_FILES['Filedata']['tmp_name'],

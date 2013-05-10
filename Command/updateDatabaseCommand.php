@@ -33,7 +33,7 @@ EOT
         $quiet = $input->getOption('q');
         $deleteDir = $input->getOption('deleteDir');
 
-        $em = $this->getContainer()->get('doctrine')->getEntityManager('default');
+        $em = $this->getContainer()->get('doctrine')->getManager('default');
 
         $fileManager = $this->getContainer()->get('kitpages.file.manager');
         $fileSystemManager = $this->getContainer()->get('kitpages_file_system.filesystem.kitpagesFile');

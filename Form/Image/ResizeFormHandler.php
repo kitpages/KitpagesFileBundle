@@ -5,7 +5,7 @@ namespace Kitpages\FileBundle\Form\Image;
 
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\DoctrineBundle\Registry;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Form\FormError;
 
 use Imagine\Image\Box;
@@ -38,7 +38,7 @@ class ResizeFormHandler
     {
         $versionErrorList = array();
         if ($this->request->getMethod() == 'POST' && $this->request->request->get($form->getName()) !== null) {
-            $form->bindRequest($this->request);
+            $form->bind($this->request);
 
             if ($form->isValid()) {
                 $dataForm = $this->request->request->get($formFile->getName());
@@ -46,7 +46,7 @@ class ResizeFormHandler
                 $fileId = $dataForm['fileId'];
                 $publishParent = $dataForm['publishParent'];
                 if (!is_null($fileId)) {
-                    $em = $this->doctrine->getEntityManager();
+                    $em = $this->doctrine->getManager();
                     $file = $em->getRepository($fileClass)->find($fileId);
 
 
@@ -112,8 +112,8 @@ class ResizeFormHandler
         foreach ($form->getErrors() as $key => $error) {
             $errors[] = strtr($error->getMessageTemplate(), $error->getMessageParameters());
         }
-        if ($form->hasChildren()) {
-            foreach ($form->getChildren() as $child) {
+        if (count($form) > 0 ) {
+            foreach ($form->all() as $child) {
                 if (!$child->isValid()) {
                     $errors[$child->getName()] = $this->getErrorMessages($child);
                 }

@@ -20,6 +20,9 @@ You need to create a table in the database :
 launch command:
 php app/console doctrine:schema:update
 
+
+
+
 UPDATE DATABASE IF EXISTS
 ===========
 updates an existing database in version1.2.0
