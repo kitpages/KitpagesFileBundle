@@ -32,7 +32,7 @@ class File extends FileBase {
      *
      * @param Kitpages\FileBundle\Entity\FileBase $parent
      */
-    public function setParent(\Kitpages\FileBundle\Entity\FileBase $parent)
+    public function setParent($parent)
     {
         $this->parent = $parent;
     }

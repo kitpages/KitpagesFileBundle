@@ -20,8 +20,40 @@ You need to create a table in the database :
 launch command:
 php app/console doctrine:schema:update
 
+Add a field file upload in a form
+=================================
+In form Class
+        $builder->add(
+            'fileId',
+            'hidden',
+            array(
+                "label" => "File"
+            )
+        );
 
+In file Twig
+<link rel="stylesheet" type="text/css" href="{{ asset ("bundles/kitpagesfile/uploadify/uploadify.css") }}" />
+<link rel="stylesheet" type="text/css" href="{{ asset ("bundles/kitpagesfile/css/style.css") }}" />
 
+<script type="text/javascript" src="{{ asset ("bundles/kitpagesfile/uploadify/jquery.uploadify.min.js") }}"></script>
+{% include 'KitpagesFileBundle:Upload:pluginJs.html.twig' ignore missing %}
+
+    <form class="standard-form" {{ form_enctype(form) }} method="POST">
+        <div id="form">
+            {{ form_row(
+            form.title
+            ) }}
+            <div>
+                <label>Image</label>
+                {{ form_widget(form.file) }}
+                {% render 'KitpagesFileBundle:Upload:widget' with {'fieldId': 'form_fileId', 'itemClass': 'AppSiteBundle:Document', 'itemId': form.vars.value.id, parameterList:{'multi': false, 'publishParent': false} } %}
+            </div>
+            {{ form_widget(form) }}
+        </div>
+        <input type="submit" value="Save"/>
+    </form>
+
+Attention fieldId = the attribute ID of input generate by "{{ form_widget(form.fileId) }}" in the form
 
 UPDATE DATABASE IF EXISTS
 ===========
@@ -106,6 +138,9 @@ complete config.yml
         Extendentity :
             class: App\SiteBundle\Entity\Extendentity
             data_dir_prefix: /ExtendentityDir
+
+
+
 
 
 
