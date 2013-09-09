@@ -3,9 +3,9 @@
 namespace Kitpages\FileBundle\Model;
 
 // external service
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Routing\RouterInterface;
 use Kitpages\FileBundle\Entity\File;
 use Kitpages\FileBundle\Entity\FileInterface;
@@ -21,7 +21,8 @@ class FileManager {
     // dependency injection
     ////
     protected $dispatcher = null;
-    protected $doctrine = null;
+    /** @var EntityManager */
+    protected $em = null;
     protected $router = null;
     protected $logger = null;
     protected $fileSystem = null;
@@ -30,7 +31,7 @@ class FileManager {
     protected $typeList = array();
 
     public function __construct(
-        Registry $doctrine,
+        EntityManager $em,
         EventDispatcherInterface $dispatcher,
         RouterInterface $router,
         LoggerInterface $logger,
@@ -41,7 +42,7 @@ class FileManager {
     )
     {
         $this->dispatcher = $dispatcher;
-        $this->doctrine = $doctrine;
+        $this->em = $em;
         $this->router = $router;
         $this->logger = $logger;
         $this->fileSystem = $fileSystem;
@@ -144,14 +145,6 @@ class FileManager {
      */
     public function getDispatcher() {
         return $this->dispatcher;
-    }
-
-    /**
-     * @return Registry
-     */
-    public function getDoctrine()
-    {
-        return $this->doctrine;
     }
 
     ////
@@ -265,7 +258,7 @@ class FileManager {
         if (! $event->isDefaultPrevented()) {
             // manage object creation
             $file = $event->get('fileObject');
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->em;
             $em->persist($file);
 
             $em->flush();
@@ -326,7 +319,7 @@ class FileManager {
         if (! $event->isDefaultPrevented()) {
             // manage object creation
             $file = $event->get('fileObject');
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->em;
             $em->persist($file);
 
             $em->flush();
@@ -364,7 +357,7 @@ class FileManager {
             // remove original file
             $this->fileSystem->unlink(new AdapterFile($this->getFilePath($file)));
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->em;
             $em->remove($file);
             $em->flush();
         }
@@ -373,7 +366,7 @@ class FileManager {
 
     public function deleteTemp($itemCategory, $itemId, $entityFileName = 'default')
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em;
         $fileClass = $this->getFileClass($entityFileName);
         $fileList = $em->getRepository($fileClass)->findByStatusAndItem(
             FileInterface::STATUS_TEMP,

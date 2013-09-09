@@ -19,7 +19,8 @@
         "symfony/framework-bundle": "~2.1",
         "avalanche123/imagine-bundle": "2.1.*",
         "kitpages/file-system-bundle": "~3.1",
-        "kitpages/util-bundle": "~3.0"
+        "kitpages/util-bundle": "~3.0",
+        "doctrine/orm": "~2.2"
     },
     "require-dev": {
         "symfony/class-loader": "~2.1",

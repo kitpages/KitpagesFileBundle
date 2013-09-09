@@ -5,8 +5,8 @@ namespace Kitpages\FileBundle\Form\Image;
 
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Form\FormError;
+use Doctrine\ORM\EntityManager;
 
 use Imagine\Image\Box;
 use Imagine\Filter\Transformation;
@@ -17,17 +17,18 @@ use Kitpages\FileSystemBundle\Model\AdapterFile;
 class ResizeFormHandler
 {
     protected $request;
-    protected $doctrine;
+    /** @var  EntityManager */
+    protected $em;
 
     public function __construct(
-        Registry $doctrine,
+        EntityManager $em,
         Request $request,
         $validator,
         FileManager $fileManager,
         $library
     )
     {
-        $this->doctrine = $doctrine;
+        $this->em = $em;
         $this->request = $request;
         $this->validator = $validator;
         $this->fileManager = $fileManager;
@@ -46,7 +47,7 @@ class ResizeFormHandler
                 $fileId = $dataForm['fileId'];
                 $publishParent = $dataForm['publishParent'];
                 if (!is_null($fileId)) {
-                    $em = $this->doctrine->getManager();
+                    $em = $this->em;
                     $file = $em->getRepository($fileClass)->find($fileId);
 
 
