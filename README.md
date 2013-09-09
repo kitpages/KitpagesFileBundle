@@ -1,5 +1,5 @@
 KitpagesFileBundle
-=====================================
+==================
 
 This is an ajax upload system for symfony.
 

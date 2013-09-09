@@ -1,1 +1,4 @@
 Entity/*~
+.idea/*
+vendor/*
+composer.lock
