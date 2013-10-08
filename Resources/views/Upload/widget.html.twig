@@ -12,9 +12,10 @@ $(document).ready(function() {
     var fileList = new Array();
     var nbrLoadedFile = 0;
     {% if parameterList.multi %}
-        var nbrFileToLoad = fieldList.children('input').length;
+        var nbrFileToLoad = fieldList.find('input').length;
+        fieldList.hide();
         if(nbrFileToLoad >= 0) {
-            fieldList.children('input').each(function(index){
+            fieldList.find('input').each(function(index){
                 var fileId = $("#{{ fieldId }}_" + index).attr('value');
                 $.ajax({
                     type: "POST",

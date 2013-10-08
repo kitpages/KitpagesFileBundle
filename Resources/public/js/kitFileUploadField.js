@@ -104,10 +104,10 @@
                 if (this._settings.isMulti) {
                     var prototype = self._boundingBox.data('prototype');
                     if (idCount == undefined) {
-                        var idCount = self._settings["boundingBoxList"].children('li').length;
+                        var idCount = self._settings["boundingBoxList"].find('li').length;
                         idCount--;
                     }
-                    var p = prototype.replace(/\$\$name\$\$/g, idCount);
+                    var p = prototype.replace(/__name__/g, idCount);
                     self._boundingBox.append(p);
                     $('#' + self._boundingBox.attr('id') +'_' + idCount).attr('value', fileInfo.id);
                 } else {
@@ -118,7 +118,7 @@
                 var self = this;
 
                 if (self._settings.isMulti) {
-                    self._boundingBox.children("input[value="  + idTarget + "]").attr('value', idNew);
+                    self._boundingBox.find("input[value="  + idTarget + "]").attr('value', idNew);
                 } else {
                     self._boundingBox.attr('value', idNew);
                 }
@@ -127,7 +127,7 @@
                 var self = this;
 
                 if (self._settings.isMulti) {
-                    self._boundingBox.children("input[value="  + idCount + "]").remove();
+                    self._boundingBox.find("input[value="  + idCount + "]").remove();
                 } else {
                     self._boundingBox.attr('value', '');
                 }
