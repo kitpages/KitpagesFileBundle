@@ -8,18 +8,18 @@ class FileBaseRepository extends EntityRepository
     public function findByStatusAndItem($status, $itemClass, $itemId)
     {
         $calledClass = get_called_class();
-        $listFile = $this->_em
-            ->createQuery("
-                SELECT f
-                FROM ".$calledClass::entity." f
-                WHERE f.status = :status
-                  AND f.itemClass = :itemClass
-                  AND f.itemId = :itemId
-            ")
+        $qb = $this->_em->createQueryBuilder();
+        $qb
+            ->select('f')
+            ->from($calledClass::entity, 'f')
+            ->where('f.status = :status')
+            ->andWhere('f.itemClass = :itemClass')
+            ->andWhere('f.itemId = :itemId')
             ->setParameter("status", $status)
             ->setParameter("itemClass", $itemClass)
             ->setParameter("itemId", $itemId)
-            ->getResult();
+        ;
+        $listFile = $qb->getQuery()->getResult();
         return $listFile;
     }
 

@@ -10,11 +10,18 @@ framework:
 doctrine:
     dbal:
         driver:   'pdo_sqlite'
-        memory:   true
+        path:     %kernel.cache_dir%/test.db
+
     orm:
         entity_managers:
             default:
                 auto_mapping: true
+monolog:
+    handlers:
+        main:
+            type:   stream
+            path:   "%kernel.logs_dir%/%kernel.environment%.log"
+            level:  debug
 
 liip_functional_test:
     cache_sqlite_db: true

@@ -11,6 +11,7 @@ class AppKernel extends Kernel
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Kitpages\FileBundle\KitpagesFileBundle(),
             new \Kitpages\UtilBundle\KitpagesUtilBundle(),
+            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new Kitpages\FileSystemBundle\KitpagesFileSystemBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Liip\FunctionalTestBundle\LiipFunctionalTestBundle(),
