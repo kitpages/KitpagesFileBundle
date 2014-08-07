@@ -1,0 +1,41 @@
+framework:
+    trusted_hosts: ~
+    secret: "test"
+    test: ~
+    validation:      { enable_annotations: true }
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+
+
+doctrine:
+    dbal:
+        driver:   'pdo_sqlite'
+        memory:   true
+    orm:
+        entity_managers:
+            default:
+                auto_mapping: true
+
+liip_functional_test:
+    cache_sqlite_db: true
+
+kitpages_file_system:
+    file_system_list:
+        kitpagesFile:
+            local:
+                directory_public: %kernel.root_dir%/../web
+                directory_private: %kernel.root_dir%
+                base_url: %base_url%
+
+kitpages_file:
+    tmp_dir: %kernel.root_dir%/data/tmp
+    type_list:
+        image:
+            resize:
+                form: 'kit_file.image.resize.form'
+                form_twig: 'KitpagesFileBundle:ActionOnFile:Image/Resize/form.html.twig'
+                handler_form: 'kit_file.image.resize.form.handler'
+                library: 'imagine.gd'
+
+parameters:
+    base_url: 'http://test-url'
