@@ -25,7 +25,7 @@ class UploadController extends Controller
     /**
      * @return FileManager
      */
-    public function getFileManager()
+    protected function getFileManager()
     {
         return $this->get('kitpages.file.manager');
     }
