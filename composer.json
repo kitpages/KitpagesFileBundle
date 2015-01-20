@@ -17,10 +17,10 @@
     "require": {
         "php": ">=5.3.2",
         "symfony/framework-bundle": "~2.1",
-        "avalanche123/imagine-bundle": "2.1.*",
         "kitpages/file-system-bundle": "~3.1",
         "kitpages/util-bundle": "~3.0",
-        "doctrine/orm": "~2.2"
+        "doctrine/orm": "~2.2",
+        "imagine/Imagine": "~0.5"
     },
     "require-dev": {
         "symfony/class-loader": "~2.1",
