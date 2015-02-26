@@ -54,13 +54,14 @@ class UploadController extends Controller
         $entityFileName = 'default',
         $itemClass = null,
         $itemId = null,
-        $parameterList = array()
+        $parameterList = array(),
+        $render = 'KitpagesFileBundle:Upload:widget.html.twig'
     )
     {
         $parameterList = array_merge($this->defaultParameterList, $parameterList);
 
         return $this->render(
-            'KitpagesFileBundle:Upload:widget.html.twig',
+            $render,
             array(
                 "fieldId" => $fieldId,
                 "entityFileName" => $entityFileName,
