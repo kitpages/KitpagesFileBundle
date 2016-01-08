@@ -29,6 +29,7 @@
             <argument>%kitpages_file.tmp_dir%</argument>
             <argument>%kitpages_file.entity_file_name_list%</argument>
             <argument>%kitpages_file.type_list%</argument>
+            <tag name="monolog.logger" channel="kitpages_file_bundle" />
         </service>
 
         <service id="kitpages.file.sessionListener" class="%kitpages_file.sessionListener.class%">
