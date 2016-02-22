@@ -1,7 +1,7 @@
 
 var kitFileUploadList = uploadList.kitFileUploadList({
         isMulti: {% if parameterList.multi %}true{% else %}false{% endif %},
-        publishParent: {% if parameterList.publishParent %}true{% else %}false{% endif %},
+        publishParent: {% if parameterList.publishParent %}1{% else %}0{% endif %},
         urlDeletePng: '{{ asset ("bundles/kitpagesfile/icon/delete.png") }}',
         urlArrowUpPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-up.png") }}',
         urlArrowDownPng: '{{ asset ("bundles/kitpagesfile/icon/arrow-down.png") }}',
